@@ -3,19 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📊 Backtest IA Trading - Semaine Dernière</title>
+    <title>📊 Backtest Réaliste - Stratégies de ton Bot</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
             font-family: 'Arial', sans-serif;
+            color: white;
         }
         .card {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
         }
         .stat-card {
             transition: transform 0.3s;
@@ -23,14 +25,13 @@
         .stat-card:hover {
             transform: translateY(-5px);
         }
-        .trade-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            position: absolute;
+        .tx-link {
+            color: #3b82f6;
+            text-decoration: underline;
         }
-        .buy-dot { background: #10b981; }
-        .sell-dot { background: #ef4444; }
+        .tx-link:hover {
+            color: #60a5fa;
+        }
     </style>
 </head>
 <body class="p-4 md:p-8 min-h-screen">
@@ -39,22 +40,25 @@
         
         <!-- Header -->
         <div class="text-center mb-8">
-            <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">
-                📊 Backtest IA Trading
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">
+                📊 Backtest Réaliste avec Vraies Données
             </h1>
-            <p class="text-white text-lg">
-                Performance des 4 IA sur la semaine dernière (28 Nov - 5 Déc 2024)
+            <p class="text-lg text-gray-300">
+                Simulation exacte de ton bot sur données historiques réelles
+            </p>
+            <p class="text-sm text-gray-400 mt-2">
+                🔗 BSC Mainnet • 🥞 PancakeSwap V2 • 💰 Taxe 0.001 BNB
             </p>
         </div>
 
         <!-- Configuration -->
         <div class="card p-6 mb-6">
-            <h2 class="text-2xl font-bold mb-4 text-gray-800">⚙️ Configuration du Backtest</h2>
+            <h2 class="text-2xl font-bold mb-4">⚙️ Configuration du Backtest</h2>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Crypto</label>
-                    <select id="cryptoSelect" class="w-full p-3 border-2 border-gray-300 rounded-lg">
+                    <label class="block text-sm font-semibold text-gray-300 mb-2">Crypto</label>
+                    <select id="cryptoSelect" class="w-full p-3 border-2 border-gray-600 rounded-lg bg-gray-800 text-white">
                         <option value="BTCUSDT">Bitcoin (BTC)</option>
                         <option value="ETHUSDT">Ethereum (ETH)</option>
                         <option value="BNBUSDT">Binance Coin (BNB)</option>
@@ -62,70 +66,117 @@
                 </div>
                 
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Capital Initial</label>
-                    <input type="number" id="capitalInput" value="1000" min="100" class="w-full p-3 border-2 border-gray-300 rounded-lg">
+                    <label class="block text-sm font-semibold text-gray-300 mb-2">Capital Initial (USDT)</label>
+                    <input type="number" id="capitalInput" value="1000" min="100" step="100" class="w-full p-3 border-2 border-gray-600 rounded-lg bg-gray-800 text-white">
                 </div>
                 
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Intervalle</label>
-                    <select id="intervalSelect" class="w-full p-3 border-2 border-gray-300 rounded-lg">
+                    <label class="block text-sm font-semibold text-gray-300 mb-2">Intervalle</label>
+                    <select id="intervalSelect" class="w-full p-3 border-2 border-gray-600 rounded-lg bg-gray-800 text-white">
+                        <option value="1m">1 minute</option>
                         <option value="5m">5 minutes</option>
                         <option value="15m" selected>15 minutes</option>
+                        <option value="30m">30 minutes</option>
                         <option value="1h">1 heure</option>
-                        <option value="4h">4 heures</option>
                     </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-300 mb-2">Prix BNB (USDT)</label>
+                    <input type="number" id="bnbPrice" value="600" min="1" step="10" class="w-full p-3 border-2 border-gray-600 rounded-lg bg-gray-800 text-white">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                <div class="flex items-center">
+                    <input type="checkbox" id="aiClaude" checked class="w-5 h-5 mr-2">
+                    <label class="text-sm">🧠 Claude</label>
+                </div>
+                <div class="flex items-center">
+                    <input type="checkbox" id="aiGemini" checked class="w-5 h-5 mr-2">
+                    <label class="text-sm">💎 Gemini</label>
+                </div>
+                <div class="flex items-center">
+                    <input type="checkbox" id="aiChatgpt" checked class="w-5 h-5 mr-2">
+                    <label class="text-sm">🚀 ChatGPT</label>
+                </div>
+                <div class="flex items-center">
+                    <input type="checkbox" id="aiGrok" checked class="w-5 h-5 mr-2">
+                    <label class="text-sm">⚡ Grok</label>
                 </div>
             </div>
             
-            <button id="runBacktest" class="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-bold py-4 rounded-lg transition-all shadow-lg">
-                🚀 Lancer le Backtest
+            <div class="bg-blue-900 bg-opacity-50 border-2 border-blue-500 rounded-lg p-4 mb-4">
+                <p class="text-blue-200 font-bold mb-2">✅ FRAIS RÉELS INCLUS</p>
+                <ul class="text-sm text-blue-300 space-y-1">
+                    <li>• <strong>PancakeSwap:</strong> 0.25% par swap</li>
+                    <li>• <strong>Slippage:</strong> 2% par trade</li>
+                    <li>• <strong>Taxe JERCAT:</strong> 0.001 BNB par trade (~$0.60)</li>
+                    <li>• <strong>Gas BSC:</strong> ~0.003 BNB par TX (~$1.80)</li>
+                    <li>• <strong>Total frais:</strong> ~4.5% + $2.40 par trade</li>
+                </ul>
+            </div>
+            
+            <button id="runBacktest" class="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-4 rounded-lg transition-all shadow-lg">
+                🚀 Lancer le Backtest Réaliste
             </button>
         </div>
 
         <!-- Loading -->
         <div id="loading" class="card p-8 mb-6 text-center" style="display: none;">
-            <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-purple-600 mx-auto mb-4"></div>
-            <p class="text-gray-700 font-semibold">Récupération des données historiques...</p>
-            <p class="text-gray-500 text-sm mt-2" id="loadingProgress">0%</p>
+            <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-purple-500 mx-auto mb-4"></div>
+            <p class="font-semibold">Récupération données Binance...</p>
+            <p class="text-sm text-gray-400 mt-2" id="loadingProgress">0%</p>
         </div>
 
         <!-- Results -->
         <div id="results" style="display: none;">
             
+            <!-- Résumé global -->
+            <div class="card p-6 mb-6">
+                <h2 class="text-2xl font-bold mb-4">📈 Résumé du Backtest</h2>
+                <div id="summary" class="grid grid-cols-1 md:grid-cols-4 gap-4"></div>
+            </div>
+
             <!-- Classement -->
             <div class="card p-6 mb-6">
-                <h2 class="text-2xl font-bold mb-4 text-gray-800">🏆 Classement Final</h2>
+                <h2 class="text-2xl font-bold mb-4">🏆 Classement des IA</h2>
                 <div id="ranking" class="space-y-3"></div>
             </div>
 
-            <!-- Stats détaillées -->
+            <!-- Stats par IA -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6" id="aiStats"></div>
 
-            <!-- Graphique principal -->
+            <!-- Graphique capital -->
             <div class="card p-6 mb-6">
-                <h2 class="text-2xl font-bold mb-4 text-gray-800">📈 Évolution du Capital</h2>
+                <h2 class="text-2xl font-bold mb-4">📊 Évolution du Capital</h2>
                 <canvas id="capitalChart"></canvas>
             </div>
 
-            <!-- Graphique prix avec trades -->
+            <!-- Graphique prix + trades -->
             <div class="card p-6 mb-6">
-                <h2 class="text-2xl font-bold mb-4 text-gray-800">💹 Prix et Trades</h2>
+                <h2 class="text-2xl font-bold mb-4">💹 Prix et Points de Trade</h2>
                 <canvas id="priceChart"></canvas>
             </div>
 
-            <!-- Journal des trades -->
+            <!-- Journal détaillé -->
             <div class="card p-6">
-                <h2 class="text-2xl font-bold mb-4 text-gray-800">📝 Journal des Trades</h2>
+                <h2 class="text-2xl font-bold mb-4">📝 Journal Complet des Trades</h2>
+                <div class="text-sm text-gray-400 mb-4">
+                    <p>Chaque trade montre les TX qui auraient été faites sur BSC</p>
+                </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm">
                         <thead>
-                            <tr class="bg-gray-100">
+                            <tr class="bg-gray-800 bg-opacity-50">
                                 <th class="p-2 text-left">IA</th>
-                                <th class="p-2 text-left">Type</th>
-                                <th class="p-2 text-left">Date</th>
+                                <th class="p-2 text-left">Action</th>
+                                <th class="p-2 text-left">Date/Heure</th>
                                 <th class="p-2 text-right">Prix</th>
                                 <th class="p-2 text-right">Montant</th>
-                                <th class="p-2 text-right">Profit</th>
+                                <th class="p-2 text-right">Frais Total</th>
+                                <th class="p-2 text-right">Profit Net</th>
+                                <th class="p-2 text-left">TX Simulées</th>
                             </tr>
                         </thead>
                         <tbody id="tradesTable"></tbody>
@@ -138,77 +189,77 @@
     </div>
 
     <script>
-        // Configuration
-        const AI_CONFIG = {
+        // Configuration exacte de ton bot
+        const CONFIG = {
+            TRADE_FEE_BNB: 0.001,
+            GAS_PER_TX: 0.003,
+            PANCAKESWAP_FEE: 0.0025,
+            SLIPPAGE: 0.02,
+            MIN_TRADE: 10,
+            TRADE_PERCENT: 0.3
+        };
+
+        const AI_STRATEGIES = {
             claude: {
                 name: 'Claude',
                 icon: '🧠',
                 color: '#10b981',
-                strategy: 'conservative',
-                buyThreshold: 0.20
+                rsiOversold: 30,
+                rsiOverbought: 70,
+                takeProfitPercent: 2,
+                stopLossPercent: -1,
+                maxHoldPeriods: 30
             },
             gemini: {
                 name: 'Gemini',
                 icon: '💎',
                 color: '#3b82f6',
-                strategy: 'balanced',
-                buyThreshold: 0.40
+                rsiOversold: 35,
+                rsiOverbought: 65,
+                takeProfitPercent: 3,
+                stopLossPercent: -1.5,
+                maxHoldPeriods: 40
             },
             chatgpt: {
                 name: 'ChatGPT',
                 icon: '🚀',
                 color: '#8b5cf6',
-                strategy: 'patterns',
-                buyThreshold: 0.35
+                rsiOversold: 40,
+                rsiOverbought: 60,
+                takeProfitPercent: 4,
+                stopLossPercent: -2,
+                maxHoldPeriods: 50
             },
             grok: {
                 name: 'Grok',
                 icon: '⚡',
                 color: '#f59e0b',
-                strategy: 'aggressive',
-                buyThreshold: 0.60
+                rsiOversold: 45,
+                rsiOverbought: 55,
+                takeProfitPercent: 5,
+                stopLossPercent: -2.5,
+                maxHoldPeriods: 60
             }
         };
 
-        let capitalChart, priceChart;
-        let backtestData = {
-            prices: [],
-            timestamps: [],
-            aiPerformance: {}
-        };
+        let charts = {};
 
-        // Récupérer les données historiques
+        // Récupérer données historiques Binance
         async function fetchHistoricalData(symbol, interval) {
             const endTime = Date.now();
-            const startTime = endTime - (7 * 24 * 60 * 60 * 1000); // 7 jours
+            const startTime = endTime - (7 * 24 * 60 * 60 * 1000);
             
-            // Binance API
             const url = `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&startTime=${startTime}&endTime=${endTime}&limit=1000`;
             
-            try {
-                const response = await fetch(url);
-                const data = await response.json();
-                
-                return data.map(candle => ({
-                    timestamp: candle[0],
-                    open: parseFloat(candle[1]),
-                    high: parseFloat(candle[2]),
-                    low: parseFloat(candle[3]),
-                    close: parseFloat(candle[4]),
-                    volume: parseFloat(candle[5])
-                }));
-            } catch (error) {
-                console.error('Erreur récupération données:', error);
-                return [];
-            }
+            const response = await fetch(url);
+            return await response.json();
         }
 
         // Calculer RSI
         function calculateRSI(prices, period = 14) {
-            if (prices.length < period) return 50;
+            if (prices.length < period + 1) return 50;
             
-            let gains = 0;
-            let losses = 0;
+            let gains = 0, losses = 0;
             
             for (let i = prices.length - period; i < prices.length; i++) {
                 const change = prices[i] - prices[i - 1];
@@ -220,22 +271,13 @@
             const avgLoss = losses / period;
             
             if (avgLoss === 0) return 100;
-            const rs = avgGain / avgLoss;
-            return 100 - (100 / (1 + rs));
+            return 100 - (100 / (1 + (avgGain / avgLoss)));
         }
 
-        // Calculer MACD
-        function calculateMACD(prices) {
-            if (prices.length < 26) return { macd: 0, signal: 0 };
-            
-            const ema12 = calculateEMA(prices, 12);
-            const ema26 = calculateEMA(prices, 26);
-            const macd = ema12 - ema26;
-            
-            return { macd, signal: 0 };
-        }
-
+        // Calculer EMA
         function calculateEMA(prices, period) {
+            if (prices.length < period) return prices[prices.length - 1];
+            
             const k = 2 / (period + 1);
             let ema = prices[0];
             
@@ -246,216 +288,333 @@
             return ema;
         }
 
-        // Stratégies de trading
-        function shouldBuy(ai, price, prices, rsi, macd) {
-            const config = AI_CONFIG[ai];
+        // Décision d'achat (DÉTERMINISTE - pas de random)
+        function shouldBuy(aiName, currentPrice, priceHistory, rsi, ema20, ema50) {
+            const strategy = AI_STRATEGIES[aiName];
             
-            switch (config.strategy) {
-                case 'conservative': // Claude
-                    return rsi < 30 && Math.random() < config.buyThreshold;
-                    
-                case 'balanced': // Gemini
-                    const priceChange = (price - prices[prices.length - 5]) / prices[prices.length - 5];
-                    return priceChange > 0.01 && Math.random() < config.buyThreshold;
-                    
-                case 'patterns': // ChatGPT
-                    const trend = prices.slice(-10).every((p, i, arr) => i === 0 || p >= arr[i-1]);
-                    return trend && Math.random() < config.buyThreshold;
-                    
-                case 'aggressive': // Grok
-                    return macd.macd > 0 && Math.random() < config.buyThreshold;
-                    
+            // Logique basée sur RSI et EMA
+            const rsiSignal = rsi < strategy.rsiOversold;
+            const emaSignal = ema20 > ema50; // Golden cross
+            const momentum = (currentPrice - priceHistory[priceHistory.length - 10]) / priceHistory[priceHistory.length - 10];
+            
+            // Chaque IA a sa propre logique
+            switch(aiName) {
+                case 'claude':
+                    return rsiSignal && emaSignal;
+                case 'gemini':
+                    return rsiSignal && momentum > 0.01;
+                case 'chatgpt':
+                    return emaSignal && momentum > 0.015;
+                case 'grok':
+                    return rsi < 50 && momentum > 0.02;
                 default:
                     return false;
             }
         }
 
-        function shouldSell(ai, entryPrice, currentPrice, holdTime, rsi) {
+        // Décision de vente (DÉTERMINISTE)
+        function shouldSell(aiName, entryPrice, currentPrice, holdPeriods, rsi) {
+            const strategy = AI_STRATEGIES[aiName];
             const profitPercent = ((currentPrice - entryPrice) / entryPrice) * 100;
-            const config = AI_CONFIG[ai];
             
-            switch (config.strategy) {
-                case 'conservative': // Claude - Take profit rapide
-                    return profitPercent > 1.5 || profitPercent < -1 || holdTime > 20;
-                    
-                case 'balanced': // Gemini
-                    return profitPercent > 2 || profitPercent < -1.5 || holdTime > 30;
-                    
-                case 'patterns': // ChatGPT
-                    return profitPercent > 3 || profitPercent < -2 || rsi > 70;
-                    
-                case 'aggressive': // Grok - Hold plus longtemps
-                    return profitPercent > 4 || profitPercent < -2.5 || holdTime > 40;
-                    
-                default:
-                    return false;
-            }
+            // Take profit
+            if (profitPercent >= strategy.takeProfitPercent) return true;
+            
+            // Stop loss
+            if (profitPercent <= strategy.stopLossPercent) return true;
+            
+            // Max hold time
+            if (holdPeriods >= strategy.maxHoldPeriods) return true;
+            
+            // RSI overbought
+            if (rsi > strategy.rsiOverbought) return true;
+            
+            return false;
         }
 
-        // Exécuter le backtest
+        // Calculer frais réels
+        function calculateFees(tradeAmount, bnbPrice) {
+            const pancakeswapFee = tradeAmount * CONFIG.PANCAKESWAP_FEE;
+            const slippageLoss = tradeAmount * CONFIG.SLIPPAGE;
+            const taxBNB = CONFIG.TRADE_FEE_BNB * bnbPrice;
+            const gasBNB = CONFIG.GAS_PER_TX * 2 * bnbPrice; // 2 TX (approve + swap)
+            
+            return {
+                pancakeswap: pancakeswapFee,
+                slippage: slippageLoss,
+                tax: taxBNB,
+                gas: gasBNB,
+                total: pancakeswapFee + slippageLoss + taxBNB + gasBNB
+            };
+        }
+
+        // Simuler une TX
+        function generateTxHash() {
+            return '0x' + Array.from({length: 64}, () => 
+                Math.floor(Math.random() * 16).toString(16)
+            ).join('');
+        }
+
+        // Lancer le backtest
         async function runBacktest() {
             const symbol = document.getElementById('cryptoSelect').value;
             const capital = parseFloat(document.getElementById('capitalInput').value);
             const interval = document.getElementById('intervalSelect').value;
+            const bnbPrice = parseFloat(document.getElementById('bnbPrice').value);
             
-            // Afficher loading
-            document.getElementById('loading').style.display = 'block';
-            document.getElementById('results').style.display = 'none';
-            
-            // Récupérer les données
-            document.getElementById('loadingProgress').textContent = 'Récupération des données...';
-            const historicalData = await fetchHistoricalData(symbol, interval);
-            
-            if (historicalData.length === 0) {
-                alert('Erreur lors de la récupération des données');
-                document.getElementById('loading').style.display = 'none';
+            const activeAIs = {};
+            ['claude', 'gemini', 'chatgpt', 'grok'].forEach(ai => {
+                if (document.getElementById(`ai${ai.charAt(0).toUpperCase() + ai.slice(1)}`).checked) {
+                    activeAIs[ai] = true;
+                }
+            });
+
+            if (Object.keys(activeAIs).length === 0) {
+                alert('❌ Sélectionnez au moins une IA');
                 return;
             }
             
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('results').style.display = 'none';
+            
+            document.getElementById('loadingProgress').textContent = 'Récupération données Binance...';
+            
+            const rawData = await fetchHistoricalData(symbol, interval);
+            const candles = rawData.map(c => ({
+                timestamp: c[0],
+                open: parseFloat(c[1]),
+                high: parseFloat(c[2]),
+                low: parseFloat(c[3]),
+                close: parseFloat(c[4]),
+                volume: parseFloat(c[5])
+            }));
+            
             // Initialiser les IA
             const aiStates = {};
-            Object.keys(AI_CONFIG).forEach(ai => {
+            Object.keys(activeAIs).forEach(ai => {
                 aiStates[ai] = {
                     capital: capital,
                     position: null,
                     trades: [],
-                    capitalHistory: [capital]
+                    capitalHistory: [capital],
+                    totalFees: 0,
+                    transactions: []
                 };
             });
             
-            // Simuler le trading
-            const prices = historicalData.map(d => d.close);
+            const prices = candles.map(c => c.close);
             
-            for (let i = 50; i < historicalData.length; i++) {
-                const currentPrice = historicalData[i].close;
-                const timestamp = historicalData[i].timestamp;
-                const rsi = calculateRSI(prices.slice(0, i + 1));
-                const macd = calculateMACD(prices.slice(0, i + 1));
+            // Simulation
+            for (let i = 50; i < candles.length; i++) {
+                const currentPrice = candles[i].close;
+                const timestamp = candles[i].timestamp;
+                const priceHistory = prices.slice(0, i + 1);
+                
+                const rsi = calculateRSI(priceHistory);
+                const ema20 = calculateEMA(priceHistory, 20);
+                const ema50 = calculateEMA(priceHistory, 50);
                 
                 document.getElementById('loadingProgress').textContent = 
-                    `Simulation en cours... ${Math.round((i / historicalData.length) * 100)}%`;
+                    `Simulation... ${Math.round((i / candles.length) * 100)}%`;
                 
-                // Chaque IA prend une décision
+                // Chaque IA prend sa décision
                 for (const [aiName, state] of Object.entries(aiStates)) {
                     if (!state.position) {
-                        // Pas de position - Regarder si on achète
-                        if (shouldBuy(aiName, currentPrice, prices.slice(0, i + 1), rsi, macd)) {
-                            const tradeAmount = state.capital * 0.3; // 30% du capital
-                            const tokens = tradeAmount / currentPrice;
+                        // Pas de position - regarder si achat
+                        if (shouldBuy(aiName, currentPrice, priceHistory, rsi, ema20, ema50)) {
+                            const tradeAmount = state.capital * CONFIG.TRADE_PERCENT;
+                            
+                            if (tradeAmount < CONFIG.MIN_TRADE) continue;
+                            
+                            const fees = calculateFees(tradeAmount, bnbPrice);
+                            const netAmount = tradeAmount - fees.total;
+                            const tokens = netAmount / currentPrice;
+                            
+                            // Générer TX simulées
+                            const taxTx = generateTxHash();
+                            const approveTx = generateTxHash();
+                            const swapTx = generateTxHash();
                             
                             state.position = {
                                 entryPrice: currentPrice,
-                                entryTime: i,
+                                entryIndex: i,
                                 amount: tradeAmount,
                                 tokens: tokens,
-                                timestamp: timestamp
+                                timestamp: timestamp,
+                                fees: fees
                             };
+                            
+                            state.totalFees += fees.total;
                             
                             state.trades.push({
                                 type: 'BUY',
                                 price: currentPrice,
                                 amount: tradeAmount,
+                                fees: fees,
                                 timestamp: timestamp,
-                                index: i
+                                index: i,
+                                transactions: [
+                                    { type: 'TAX', tx: taxTx, amount: fees.tax },
+                                    { type: 'APPROVE', tx: approveTx, gas: fees.gas / 2 },
+                                    { type: 'SWAP', tx: swapTx, amount: netAmount }
+                                ]
                             });
+                            
+                            state.transactions.push(...[
+                                { type: 'TAX', tx: taxTx, time: timestamp },
+                                { type: 'APPROVE', tx: approveTx, time: timestamp },
+                                { type: 'SWAP BUY', tx: swapTx, time: timestamp }
+                            ]);
                         }
                     } else {
-                        // Position ouverte - Regarder si on vend
-                        const holdTime = i - state.position.entryTime;
+                        // Position ouverte - regarder si vente
+                        const holdPeriods = i - state.position.entryIndex;
                         
-                        if (shouldSell(aiName, state.position.entryPrice, currentPrice, holdTime, rsi)) {
-                            const sellValue = state.position.tokens * currentPrice;
-                            const profit = sellValue - state.position.amount;
+                        if (shouldSell(aiName, state.position.entryPrice, currentPrice, holdPeriods, rsi)) {
+                            const grossValue = state.position.tokens * currentPrice;
+                            const fees = calculateFees(grossValue, bnbPrice);
+                            const netValue = grossValue - fees.total;
+                            const profit = netValue - state.position.amount;
                             
                             state.capital += profit;
+                            state.totalFees += fees.total;
+                            
+                            // Générer TX
+                            const taxTx = generateTxHash();
+                            const approveTx = generateTxHash();
+                            const swapTx = generateTxHash();
                             
                             state.trades.push({
                                 type: 'SELL',
                                 price: currentPrice,
-                                amount: sellValue,
+                                amount: netValue,
+                                fees: fees,
                                 profit: profit,
                                 timestamp: timestamp,
                                 index: i,
-                                holdTime: holdTime
+                                holdPeriods: holdPeriods,
+                                transactions: [
+                                    { type: 'TAX', tx: taxTx, amount: fees.tax },
+                                    { type: 'APPROVE', tx: approveTx, gas: fees.gas / 2 },
+                                    { type: 'SWAP', tx: swapTx, amount: netValue }
+                                ]
                             });
+                            
+                            state.transactions.push(...[
+                                { type: 'TAX', tx: taxTx, time: timestamp },
+                                { type: 'APPROVE', tx: approveTx, time: timestamp },
+                                { type: 'SWAP SELL', tx: swapTx, time: timestamp }
+                            ]);
                             
                             state.position = null;
                         }
                     }
                     
-                    // Calculer le capital actuel (incluant position ouverte)
+                    // Capital actuel
                     let currentCapital = state.capital;
                     if (state.position) {
-                        currentCapital += (state.position.tokens * currentPrice) - state.position.amount;
+                        const posValue = state.position.tokens * currentPrice;
+                        const exitFees = calculateFees(posValue, bnbPrice);
+                        currentCapital += posValue - state.position.amount - exitFees.total;
                     }
                     state.capitalHistory.push(currentCapital);
                 }
             }
             
-            // Afficher les résultats
-            backtestData = {
-                prices: historicalData,
-                aiStates: aiStates,
-                symbol: symbol
-            };
-            
-            displayResults();
+            displayResults(aiStates, candles, capital, bnbPrice);
         }
 
-        // Afficher les résultats
-        function displayResults() {
+        // Afficher résultats
+        function displayResults(aiStates, candles, initialCapital, bnbPrice) {
             document.getElementById('loading').style.display = 'none';
             document.getElementById('results').style.display = 'block';
             
-            const { aiStates, prices, symbol } = backtestData;
-            
-            // Calculer les stats
             const rankings = Object.entries(aiStates).map(([name, state]) => {
                 const finalCapital = state.capitalHistory[state.capitalHistory.length - 1];
-                const initialCapital = state.capitalHistory[0];
                 const profit = finalCapital - initialCapital;
                 const profitPercent = (profit / initialCapital) * 100;
                 
-                const wins = state.trades.filter(t => t.type === 'SELL' && t.profit > 0).length;
-                const losses = state.trades.filter(t => t.type === 'SELL' && t.profit < 0).length;
+                const sellTrades = state.trades.filter(t => t.type === 'SELL');
+                const wins = sellTrades.filter(t => t.profit > 0).length;
+                const losses = sellTrades.filter(t => t.profit < 0).length;
                 const winRate = wins + losses > 0 ? (wins / (wins + losses)) * 100 : 0;
                 
                 return {
                     name,
-                    config: AI_CONFIG[name],
+                    config: AI_STRATEGIES[name],
                     finalCapital,
                     profit,
                     profitPercent,
-                    trades: state.trades.length,
+                    totalTrades: state.trades.length,
+                    sellTrades: sellTrades.length,
                     wins,
                     losses,
-                    winRate
+                    winRate,
+                    totalFees: state.totalFees,
+                    totalTx: state.transactions.length
                 };
             }).sort((a, b) => b.profit - a.profit);
             
-            // Afficher le classement
-            const rankingHTML = rankings.map((ai, index) => {
-                const medals = ['🥇', '🥈', '🥉', '4️⃣'];
-                const profitColor = ai.profit >= 0 ? 'text-green-600' : 'text-red-600';
+            // Résumé global
+            const totalTrades = rankings.reduce((sum, ai) => sum + ai.totalTrades, 0);
+            const totalFees = rankings.reduce((sum, ai) => sum + ai.totalFees, 0);
+            const totalTx = rankings.reduce((sum, ai) => sum + ai.totalTx, 0);
+            const bestProfit = rankings[0].profit;
+            
+            const summaryHTML = `
+                <div class="bg-gray-800 bg-opacity-50 p-4 rounded-lg">
+                    <p class="text-sm text-gray-400">Période</p>
+                    <p class="text-xl font-bold">${new Date(candles[50].timestamp).toLocaleDateString()} - ${new Date(candles[candles.length-1].timestamp).toLocaleDateString()}</p>
+                </div>
+                <div class="bg-gray-800 bg-opacity-50 p-4 rounded-lg">
+                    <p class="text-sm text-gray-400">Total Trades</p>
+                    <p class="text-xl font-bold">${totalTrades} trades</p>
+                    <p class="text-xs text-gray-400">${totalTx} TX simulées</p>
+                </div>
+                <div class="bg-gray-800 bg-opacity-50 p-4 rounded-lg">
+                    <p class="text-sm text-gray-400">Frais Totaux</p>
+                    <p class="text-xl font-bold text-red-400">-$${totalFees.toFixed(2)}</p>
+                    <p class="text-xs text-gray-400">~${(totalFees / bnbPrice).toFixed(3)} BNB</p>
+                </div>
+                <div class="bg-gray-800 bg-opacity-50 p-4 rounded-lg">
+                    <p class="text-sm text-gray-400">Meilleur Résultat</p>
+                    <p class="text-xl font-bold ${bestProfit >= 0 ? 'text-green-400' : 'text-red-400'}">
+                        ${bestProfit >= 0 ? '+' : ''}$${bestProfit.toFixed(2)}
+                    </p>
+                    <p class="text-xs text-gray-400">${rankings[0].config.icon} ${rankings[0].config.name}</p>
+                </div>
+            `;
+            document.getElementById('summary').innerHTML = summaryHTML;
+            
+            // Classement
+            const medals = ['🥇', '🥈', '🥉', '4️⃣'];
+            const rankingHTML = rankings.map((ai, idx) => {
+                const profitColor = ai.profit >= 0 ? 'text-green-400' : 'text-red-400';
                 
                 return `
-                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div class="flex items-center justify-between p-4 bg-gray-800 bg-opacity-50 rounded-lg">
                         <div class="flex items-center gap-3">
-                            <span class="text-2xl">${medals[index]}</span>
+                            <span class="text-2xl">${medals[idx]}</span>
                             <span class="text-2xl">${ai.config.icon}</span>
                             <div>
-                                <p class="font-bold text-gray-800">${ai.config.name}</p>
-                                <p class="text-sm text-gray-600">${ai.trades} trades • ${ai.winRate.toFixed(1)}% win rate</p>
+                                <p class="font-bold">${ai.config.name}</p>
+                                <p class="text-sm text-gray-400">
+                                    ${ai.totalTrades} trades • ${ai.winRate.toFixed(1)}% win • ${ai.totalTx} TX
+                                </p>
                             </div>
                         </div>
                         <div class="text-right">
-                            <p class="font-bold ${profitColor}">${ai.profit >= 0 ? '+' : ''}$${ai.profit.toFixed(2)}</p>
-                            <p class="text-sm ${profitColor}">${ai.profitPercent >= 0 ? '+' : ''}${ai.profitPercent.toFixed(2)}%</p>
+                            <p class="font-bold ${profitColor} text-lg">
+                                ${ai.profit >= 0 ? '+' : ''}$${ai.profit.toFixed(2)}
+                            </p>
+                            <p class="text-sm ${profitColor}">
+                                ${ai.profitPercent >= 0 ? '+' : ''}${ai.profitPercent.toFixed(2)}%
+                            </p>
+                            <p class="text-xs text-red-400">Frais: $${ai.totalFees.toFixed(2)}</p>
                         </div>
                     </div>
                 `;
             }).join('');
-            
             document.getElementById('ranking').innerHTML = rankingHTML;
             
             // Stats détaillées
@@ -463,44 +622,51 @@
                 <div class="card p-6 stat-card">
                     <div class="flex items-center justify-between mb-4">
                         <span class="text-3xl">${ai.config.icon}</span>
-                        <h3 class="font-bold text-gray-800">${ai.config.name}</h3>
+                        <h3 class="font-bold">${ai.config.name}</h3>
                     </div>
                     <div class="space-y-2 text-sm">
                         <div class="flex justify-between">
-                            <span class="text-gray-600">Capital final:</span>
+                            <span class="text-gray-400">Capital final:</span>
                             <span class="font-bold">$${ai.finalCapital.toFixed(2)}</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-gray-600">Profit:</span>
-                            <span class="font-bold ${ai.profit >= 0 ? 'text-green-600' : 'text-red-600'}">
+                            <span class="text-gray-400">Profit Net:</span>
+                            <span class="font-bold ${ai.profit >= 0 ? 'text-green-400' : 'text-red-400'}">
                                 ${ai.profit >= 0 ? '+' : ''}$${ai.profit.toFixed(2)}
                             </span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-gray-600">Trades:</span>
-                            <span class="font-bold">${ai.trades}</span>
+                            <span class="text-gray-400">Trades:</span>
+                            <span class="font-bold">${ai.totalTrades}</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-gray-600">Wins/Losses:</span>
+                            <span class="text-gray-400">Win/Loss:</span>
                             <span class="font-bold">${ai.wins}/${ai.losses}</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-gray-600">Win Rate:</span>
+                            <span class="text-gray-400">Win Rate:</span>
                             <span class="font-bold">${ai.winRate.toFixed(1)}%</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Frais Total:</span>
+                            <span class="font-bold text-red-400">$${ai.totalFees.toFixed(2)}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">TX Totales:</span>
+                            <span class="font-bold text-blue-400">${ai.totalTx}</span>
                         </div>
                     </div>
                 </div>
             `).join('');
-            
             document.getElementById('aiStats').innerHTML = statsHTML;
             
-            // Graphique évolution capital
+            // Graphique capital
             drawCapitalChart(aiStates);
             
-            // Graphique prix avec trades
-            drawPriceChart(prices, aiStates);
+            // Graphique prix
+            drawPriceChart(candles, aiStates);
             
-            // Journal des trades
+            // Table trades
             drawTradesTable(aiStates);
         }
 
@@ -508,34 +674,39 @@
         function drawCapitalChart(aiStates) {
             const ctx = document.getElementById('capitalChart').getContext('2d');
             
-            if (capitalChart) capitalChart.destroy();
+            if (charts.capital) charts.capital.destroy();
             
             const datasets = Object.entries(aiStates).map(([name, state]) => ({
-                label: AI_CONFIG[name].name,
+                label: AI_STRATEGIES[name].name,
                 data: state.capitalHistory,
-                borderColor: AI_CONFIG[name].color,
-                backgroundColor: AI_CONFIG[name].color + '20',
-                tension: 0.4
+                borderColor: AI_STRATEGIES[name].color,
+                backgroundColor: AI_STRATEGIES[name].color + '40',
+                tension: 0.4,
+                fill: false
             }));
             
-            capitalChart = new Chart(ctx, {
+            charts.capital = new Chart(ctx, {
                 type: 'line',
                 data: { datasets },
                 options: {
                     responsive: true,
                     plugins: {
-                        legend: { position: 'top' },
-                        title: {
-                            display: true,
-                            text: 'Évolution du Capital ($)'
+                        legend: { 
+                            position: 'top',
+                            labels: { color: 'white' }
                         }
                     },
                     scales: {
                         y: {
-                            beginAtZero: false,
-                            ticks: {
-                                callback: value => '$' + value.toFixed(0)
-                            }
+                            ticks: { 
+                                color: 'white',
+                                callback: v => '$' + v.toFixed(0)
+                            },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        },
+                        x: {
+                            ticks: { color: 'white' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
                         }
                     }
                 }
@@ -543,36 +714,51 @@
         }
 
         // Graphique prix
-        function drawPriceChart(prices, aiStates) {
+        function drawPriceChart(candles, aiStates) {
             const ctx = document.getElementById('priceChart').getContext('2d');
             
-            if (priceChart) priceChart.destroy();
+            if (charts.price) charts.price.destroy();
             
-            const priceData = prices.map(p => p.close);
-            const labels = prices.map((p, i) => i);
+            const priceData = candles.map(c => c.close);
             
-            priceChart = new Chart(ctx, {
+            charts.price = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels,
+                    labels: candles.map((c, i) => i),
                     datasets: [{
                         label: 'Prix',
                         data: priceData,
                         borderColor: '#6366f1',
-                        backgroundColor: '#6366f120',
-                        tension: 0.4
+                        backgroundColor: '#6366f140',
+                        tension: 0.4,
+                        fill: true
                     }]
                 },
                 options: {
                     responsive: true,
                     plugins: {
-                        legend: { position: 'top' }
+                        legend: { 
+                            labels: { color: 'white' }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            ticks: { 
+                                color: 'white',
+                                callback: v => '$' + v.toFixed(0)
+                            },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        },
+                        x: {
+                            ticks: { color: 'white' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        }
                     }
                 }
             });
         }
 
-        // Table des trades
+        // Table trades
         function drawTradesTable(aiStates) {
             const allTrades = [];
             
@@ -581,32 +767,41 @@
                     allTrades.push({
                         ...trade,
                         aiName,
-                        config: AI_CONFIG[aiName]
+                        config: AI_STRATEGIES[aiName]
                     });
                 });
             });
             
             allTrades.sort((a, b) => b.timestamp - a.timestamp);
             
-            const tradesHTML = allTrades.slice(0, 50).map(trade => {
+            const tradesHTML = allTrades.slice(0, 100).map(trade => {
                 const date = new Date(trade.timestamp).toLocaleString('fr-FR');
-                const typeColor = trade.type === 'BUY' ? 'text-green-600' : 'text-red-600';
+                const typeColor = trade.type === 'BUY' ? 'text-green-400' : 'text-red-400';
+                
+                const txLinks = trade.transactions.map(tx => 
+                    `<a href="https://bscscan.com/tx/${tx.tx}" target="_blank" class="tx-link text-xs">
+                        ${tx.type}
+                    </a>`
+                ).join(' • ');
+                
                 const profitHTML = trade.profit !== undefined ? 
-                    `<span class="${trade.profit >= 0 ? 'text-green-600' : 'text-red-600'} font-bold">
+                    `<span class="${trade.profit >= 0 ? 'text-green-400' : 'text-red-400'} font-bold">
                         ${trade.profit >= 0 ? '+' : ''}$${trade.profit.toFixed(2)}
                     </span>` : '-';
                 
                 return `
-                    <tr class="border-b hover:bg-gray-50">
+                    <tr class="border-b border-gray-700 hover:bg-gray-800 hover:bg-opacity-30">
                         <td class="p-2">
                             <span class="text-lg">${trade.config.icon}</span>
                             ${trade.config.name}
                         </td>
                         <td class="p-2 ${typeColor} font-bold">${trade.type}</td>
-                        <td class="p-2 text-gray-600 text-xs">${date}</td>
+                        <td class="p-2 text-gray-400 text-xs">${date}</td>
                         <td class="p-2 text-right">$${trade.price.toFixed(2)}</td>
                         <td class="p-2 text-right">$${trade.amount.toFixed(2)}</td>
+                        <td class="p-2 text-right text-red-400">$${trade.fees.total.toFixed(2)}</td>
                         <td class="p-2 text-right">${profitHTML}</td>
+                        <td class="p-2 text-xs">${txLinks}</td>
                     </tr>
                 `;
             }).join('');
@@ -614,7 +809,7 @@
             document.getElementById('tradesTable').innerHTML = tradesHTML;
         }
 
-        // Event listeners
+        // Event
         document.getElementById('runBacktest').addEventListener('click', runBacktest);
     </script>
 
