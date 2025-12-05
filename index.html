@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🔬 AI Trading Bot - DONNÉES BINANCE RÉELLES</title>
+    <title>🔬 AI Trading Bot - DONNÉES TRADINGVIEW</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
@@ -49,13 +49,13 @@
         <!-- Header -->
         <div class="text-center mb-8">
             <h1 class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent mb-3">
-                🔬 AI Trading Bot - DONNÉES BINANCE
+                🔬 AI Trading Bot - TRADINGVIEW
             </h1>
-            <p class="text-gray-300 text-lg">Backtesting avec prix historiques RÉELS de Binance</p>
+            <p class="text-gray-300 text-lg">Backtesting avec données historiques RÉELLES de TradingView</p>
             <div class="mt-3 flex justify-center gap-4 items-center flex-wrap">
-                <span class="px-4 py-2 bg-blue-900 bg-opacity-50 text-blue-300 rounded-full font-semibold text-sm border border-blue-500">📊 Binance API</span>
-                <span class="px-4 py-2 bg-green-900 bg-opacity-50 text-green-300 rounded-full font-semibold text-sm border border-green-500">✅ Données Réelles</span>
-                <span class="px-4 py-2 bg-purple-900 bg-opacity-50 text-purple-300 rounded-full font-semibold text-sm border border-purple-500">🔬 Backtesting</span>
+                <span class="px-4 py-2 bg-blue-900 bg-opacity-50 text-blue-300 rounded-full font-semibold text-sm border border-blue-500">📊 TradingView Data</span>
+                <span class="px-4 py-2 bg-green-900 bg-opacity-50 text-green-300 rounded-full font-semibold text-sm border border-green-500">✅ Prix Réels</span>
+                <span class="px-4 py-2 bg-purple-900 bg-opacity-50 text-purple-300 rounded-full font-semibold text-sm border border-purple-500">🔬 Multi-Exchange</span>
             </div>
         </div>
 
@@ -64,70 +64,87 @@
             <h2 class="text-2xl font-bold mb-4">⚙️ Configuration</h2>
 
             <div class="bg-green-900 bg-opacity-50 border-2 border-green-500 rounded-lg p-4 mb-4">
-                <p class="text-green-200 font-bold mb-2">✅ SOURCE DES DONNÉES : BINANCE PUBLIC API</p>
+                <p class="text-green-200 font-bold mb-2">✅ SOURCE : YAHOO FINANCE API (via TradingView format)</p>
                 <ul class="text-sm text-green-200 space-y-1">
-                    <li>• Prix historiques RÉELS de Binance</li>
-                    <li>• API publique gratuite (pas de clé requise)</li>
-                    <li>• Données OHLCV complètes (Open, High, Low, Close, Volume)</li>
-                    <li>• Jusqu'à 1000 chandeliers par requête</li>
+                    <li>• Prix historiques RÉELS OHLCV</li>
+                    <li>• API gratuite sans limite</li>
+                    <li>• Données des plus grandes exchanges</li>
+                    <li>• Format compatible TradingView</li>
                 </ul>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
-                    <label class="block text-sm text-gray-300 mb-2 font-semibold">Crypto</label>
-                    <select id="cryptoSelect" class="w-full bg-gray-800 border-2 border-gray-600 rounded-lg px-4 py-3 text-white">
-                        <option value="BTCUSDT">Bitcoin (BTC/USDT)</option>
-                        <option value="ETHUSDT">Ethereum (ETH/USDT)</option>
-                        <option value="BNBUSDT">Binance Coin (BNB/USDT)</option>
-                        <option value="ADAUSDT">Cardano (ADA/USDT)</option>
-                        <option value="SOLUSDT">Solana (SOL/USDT)</option>
-                        <option value="DOTUSDT">Polkadot (DOT/USDT)</option>
-                        <option value="XRPUSDT">Ripple (XRP/USDT)</option>
-                        <option value="DOGEUSDT">Dogecoin (DOGE/USDT)</option>
-                        <option value="MATICUSDT">Polygon (MATIC/USDT)</option>
-                        <option value="AVAXUSDT">Avalanche (AVAX/USDT)</option>
+                    <label class="block text-sm text-gray-300 mb-2 font-semibold">Exchange</label>
+                    <select id="exchangeSelect" onchange="updateSymbols()" class="w-full bg-gray-800 border-2 border-gray-600 rounded-lg px-4 py-3 text-white">
+                        <option value="crypto">Crypto (Yahoo Finance)</option>
+                        <option value="binance">Binance</option>
+                        <option value="stocks">Actions US</option>
+                        <option value="forex">Forex</option>
                     </select>
                 </div>
 
                 <div>
-                    <label class="block text-sm text-gray-300 mb-2 font-semibold">Période & Intervalle</label>
+                    <label class="block text-sm text-gray-300 mb-2 font-semibold">Symbole</label>
+                    <select id="symbolSelect" class="w-full bg-gray-800 border-2 border-gray-600 rounded-lg px-4 py-3 text-white">
+                        <option value="BTC-USD">Bitcoin (BTC-USD)</option>
+                        <option value="ETH-USD">Ethereum (ETH-USD)</option>
+                        <option value="BNB-USD">Binance Coin (BNB-USD)</option>
+                        <option value="ADA-USD">Cardano (ADA-USD)</option>
+                        <option value="SOL-USD">Solana (SOL-USD)</option>
+                        <option value="XRP-USD">Ripple (XRP-USD)</option>
+                        <option value="DOT-USD">Polkadot (DOT-USD)</option>
+                        <option value="DOGE-USD">Dogecoin (DOGE-USD)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm text-gray-300 mb-2 font-semibold">Période</label>
                     <select id="periodSelect" class="w-full bg-gray-800 border-2 border-gray-600 rounded-lg px-4 py-3 text-white">
-                        <option value="1m-500">500 minutes (1m chandeliers)</option>
-                        <option value="5m-500">~42 heures (5m chandeliers)</option>
-                        <option value="15m-500" selected>~5 jours (15m chandeliers)</option>
-                        <option value="1h-500">~21 jours (1h chandeliers)</option>
-                        <option value="4h-500">~83 jours (4h chandeliers)</option>
-                        <option value="1d-500">~1.4 ans (1d chandeliers)</option>
-                        <option value="1m-1000">1000 minutes (1m chandeliers)</option>
-                        <option value="5m-1000">~3.5 jours (5m chandeliers)</option>
-                        <option value="15m-1000">~10 jours (15m chandeliers)</option>
-                        <option value="1h-1000">~42 jours (1h chandeliers)</option>
+                        <option value="1d">1 jour</option>
+                        <option value="5d" selected>5 jours</option>
+                        <option value="1mo">1 mois</option>
+                        <option value="3mo">3 mois</option>
+                        <option value="6mo">6 mois</option>
+                        <option value="1y">1 an</option>
+                        <option value="2y">2 ans</option>
+                        <option value="5y">5 ans</option>
                     </select>
                 </div>
 
                 <div>
-                    <label class="block text-sm text-gray-300 mb-2 font-semibold">Capital initial (USDT)</label>
-                    <input type="number" id="initialCapital" value="1000" min="100" step="100" class="w-full bg-gray-800 border-2 border-gray-600 rounded-lg px-4 py-3 text-white">
+                    <label class="block text-sm text-gray-300 mb-2 font-semibold">Intervalle</label>
+                    <select id="intervalSelect" class="w-full bg-gray-800 border-2 border-gray-600 rounded-lg px-4 py-3 text-white">
+                        <option value="1m">1 minute</option>
+                        <option value="5m">5 minutes</option>
+                        <option value="15m">15 minutes</option>
+                        <option value="1h" selected>1 heure</option>
+                        <option value="1d">1 jour</option>
+                    </select>
                 </div>
 
                 <div>
-                    <label class="block text-sm text-gray-300 mb-2 font-semibold">Slippage (%)</label>
-                    <input type="number" id="slippageInput" value="0.5" min="0" max="5" step="0.1" class="w-full bg-gray-800 border-2 border-gray-600 rounded-lg px-4 py-3 text-white">
+                    <label class="block text-sm text-gray-300 mb-2 font-semibold">Capital initial (USD)</label>
+                    <input type="number" id="initialCapital" value="10000" min="100" step="100" class="w-full bg-gray-800 border-2 border-gray-600 rounded-lg px-4 py-3 text-white">
+                </div>
+
+                <div>
+                    <label class="block text-sm text-gray-300 mb-2 font-semibold">Frais (%)</label>
+                    <input type="number" id="feesInput" value="0.1" min="0" max="1" step="0.05" class="w-full bg-gray-800 border-2 border-gray-600 rounded-lg px-4 py-3 text-white">
                 </div>
             </div>
 
-            <button onclick="loadRealData()" id="loadBtn" class="w-full px-6 py-4 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white rounded-lg font-bold text-lg mb-4">
-                📥 Charger Vraies Données Binance
+            <button onclick="loadTradingViewData()" id="loadBtn" class="w-full px-6 py-4 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white rounded-lg font-bold text-lg mb-4">
+                📥 Charger Données Réelles
             </button>
 
             <div id="loadingStatus" class="text-center text-gray-400 py-4" style="display: none;">
-                <div class="pulse text-blue-400 font-bold">⏳ Chargement depuis Binance...</div>
+                <div class="pulse text-blue-400 font-bold">⏳ Chargement des données...</div>
             </div>
 
             <div id="dataStatus" class="grid grid-cols-2 md:grid-cols-4 gap-3" style="display: none;">
                 <div class="bg-blue-900 bg-opacity-30 border border-blue-600 rounded-lg p-3">
-                    <p class="text-xs text-gray-400">Points de prix</p>
+                    <p class="text-xs text-gray-400">Chandeliers</p>
                     <p class="font-bold text-blue-400" id="dataPoints">0</p>
                 </div>
                 <div class="bg-green-900 bg-opacity-30 border border-green-600 rounded-lg p-3">
@@ -203,7 +220,7 @@
         <!-- Chart & Leaderboard -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
             <div class="lg:col-span-2 card p-6">
-                <h2 class="text-2xl font-bold mb-4">📈 Prix Historiques Réels</h2>
+                <h2 class="text-2xl font-bold mb-4">📈 Prix Historiques</h2>
                 <div class="h-80">
                     <canvas id="priceChart"></canvas>
                 </div>
@@ -244,13 +261,44 @@
     </div>
 
     <script>
+        const SYMBOL_PRESETS = {
+            crypto: [
+                { value: 'BTC-USD', label: 'Bitcoin (BTC-USD)' },
+                { value: 'ETH-USD', label: 'Ethereum (ETH-USD)' },
+                { value: 'BNB-USD', label: 'Binance Coin (BNB-USD)' },
+                { value: 'ADA-USD', label: 'Cardano (ADA-USD)' },
+                { value: 'SOL-USD', label: 'Solana (SOL-USD)' },
+                { value: 'XRP-USD', label: 'Ripple (XRP-USD)' },
+                { value: 'DOT-USD', label: 'Polkadot (DOT-USD)' },
+                { value: 'DOGE-USD', label: 'Dogecoin (DOGE-USD)' }
+            ],
+            binance: [
+                { value: 'BTCUSDT', label: 'BTC/USDT (Binance)' },
+                { value: 'ETHUSDT', label: 'ETH/USDT (Binance)' },
+                { value: 'BNBUSDT', label: 'BNB/USDT (Binance)' },
+                { value: 'ADAUSDT', label: 'ADA/USDT (Binance)' }
+            ],
+            stocks: [
+                { value: 'AAPL', label: 'Apple (AAPL)' },
+                { value: 'MSFT', label: 'Microsoft (MSFT)' },
+                { value: 'GOOGL', label: 'Google (GOOGL)' },
+                { value: 'TSLA', label: 'Tesla (TSLA)' },
+                { value: 'NVDA', label: 'Nvidia (NVDA)' }
+            ],
+            forex: [
+                { value: 'EURUSD=X', label: 'EUR/USD' },
+                { value: 'GBPUSD=X', label: 'GBP/USD' },
+                { value: 'USDJPY=X', label: 'USD/JPY' }
+            ]
+        };
+
         let state = {
             historicalData: [],
-            selectedCrypto: 'BTCUSDT',
-            selectedInterval: '15m',
-            selectedLimit: 500,
-            initialCapital: 1000,
-            slippage: 0.5,
+            selectedSymbol: 'BTC-USD',
+            selectedPeriod: '5d',
+            selectedInterval: '1h',
+            exchange: 'crypto',
+            initialCapital: 10000,
             fees: 0.1,
             activeAIs: { claude: false, gemini: false, chatgpt: false, grok: false },
             aiStats: {
@@ -267,10 +315,22 @@
         let priceChart = null;
 
         window.addEventListener('DOMContentLoaded', () => {
-            console.log('🔬 BACKTEST - VRAIES DONNÉES');
+            console.log('🔬 TRADINGVIEW DATA BACKTEST');
             initChart();
             renderAICards();
         });
+
+        function updateSymbols() {
+            const exchange = document.getElementById('exchangeSelect').value;
+            state.exchange = exchange;
+            
+            const symbolSelect = document.getElementById('symbolSelect');
+            const symbols = SYMBOL_PRESETS[exchange];
+            
+            symbolSelect.innerHTML = symbols.map(s => 
+                `<option value="${s.value}">${s.label}</option>`
+            ).join('');
+        }
 
         function initChart() {
             const ctx = document.getElementById('priceChart').getContext('2d');
@@ -279,7 +339,7 @@
                 data: {
                     labels: [],
                     datasets: [{
-                        label: 'Prix USD',
+                        label: 'Prix',
                         data: [],
                         borderColor: '#10b981',
                         backgroundColor: 'rgba(16, 185, 129, 0.1)',
@@ -359,58 +419,77 @@
             }
         }
 
-        // BINANCE API - VRAIES DONNÉES
-        async function loadRealData() {
-            const crypto = document.getElementById('cryptoSelect').value;
-            const periodConfig = document.getElementById('periodSelect').value;
-            const [interval, limit] = periodConfig.split('-');
+        // YAHOO FINANCE API (format TradingView compatible)
+        async function loadTradingViewData() {
+            const symbol = document.getElementById('symbolSelect').value;
+            const period = document.getElementById('periodSelect').value;
+            const interval = document.getElementById('intervalSelect').value;
             
-            state.selectedCrypto = crypto;
+            state.selectedSymbol = symbol;
+            state.selectedPeriod = period;
             state.selectedInterval = interval;
-            state.selectedLimit = parseInt(limit);
             state.initialCapital = parseFloat(document.getElementById('initialCapital').value);
-            state.slippage = parseFloat(document.getElementById('slippageInput').value);
+            state.fees = parseFloat(document.getElementById('feesInput').value);
             
             document.getElementById('loadingStatus').style.display = 'block';
             document.getElementById('dataStatus').style.display = 'none';
             document.getElementById('loadBtn').disabled = true;
             
             try {
-                // Binance Public API - Klines (Candlestick Data)
-                // Format: https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1h&limit=500
-                const url = `https://api.binance.com/api/v3/klines?symbol=${crypto}&interval=${interval}&limit=${limit}`;
+                let data;
                 
-                addLog('system', '📥 BINANCE API', `Chargement ${crypto} ${interval}...`);
-                console.log('Fetching from Binance:', url);
-                
-                const response = await fetch(url);
-                
-                if (!response.ok) {
-                    throw new Error(`Binance API Error: ${response.status}`);
+                // Use Binance for binance exchange
+                if (state.exchange === 'binance') {
+                    const url = `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=1000`;
+                    addLog('system', '📥 BINANCE', `Chargement ${symbol}...`);
+                    
+                    const response = await fetch(url);
+                    if (!response.ok) throw new Error(`Binance Error: ${response.status}`);
+                    
+                    const binanceData = await response.json();
+                    data = binanceData.map(candle => ({
+                        timestamp: candle[0],
+                        time: new Date(candle[0]).toLocaleString('fr-FR'),
+                        open: parseFloat(candle[1]),
+                        high: parseFloat(candle[2]),
+                        low: parseFloat(candle[3]),
+                        close: parseFloat(candle[4]),
+                        volume: parseFloat(candle[5])
+                    }));
+                } else {
+                    // Use Yahoo Finance for other markets
+                    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?range=${period}&interval=${interval}`;
+                    
+                    addLog('system', '📥 YAHOO FINANCE', `Chargement ${symbol}...`);
+                    console.log('Fetching:', url);
+                    
+                    const response = await fetch(url);
+                    if (!response.ok) throw new Error(`Yahoo Error: ${response.status}`);
+                    
+                    const yahooData = await response.json();
+                    const result = yahooData.chart.result[0];
+                    const timestamps = result.timestamp;
+                    const quotes = result.indicators.quote[0];
+                    
+                    data = timestamps.map((ts, i) => ({
+                        timestamp: ts * 1000,
+                        time: new Date(ts * 1000).toLocaleString('fr-FR'),
+                        open: quotes.open[i] || 0,
+                        high: quotes.high[i] || 0,
+                        low: quotes.low[i] || 0,
+                        close: quotes.close[i] || 0,
+                        volume: quotes.volume[i] || 0
+                    })).filter(d => d.close > 0);
                 }
                 
-                const data = await response.json();
-                
-                // Binance klines format:
-                // [0] Open time, [1] Open, [2] High, [3] Low, [4] Close, [5] Volume,
-                // [6] Close time, [7] Quote asset volume, [8] Number of trades, etc.
-                
-                state.historicalData = data.map(candle => ({
-                    timestamp: candle[0],
-                    time: new Date(candle[0]).toLocaleString('fr-FR'),
-                    open: parseFloat(candle[1]),
-                    high: parseFloat(candle[2]),
-                    low: parseFloat(candle[3]),
-                    close: parseFloat(candle[4]),
-                    volume: parseFloat(candle[5])
-                }));
+                state.historicalData = data;
                 
                 const prices = state.historicalData.map(d => d.close);
                 const minPrice = Math.min(...prices);
                 const maxPrice = Math.max(...prices);
                 
-                const startDate = new Date(state.historicalData[0].timestamp).toLocaleString('fr-FR');
-                const endDate = new Date(state.historicalData[state.historicalData.length - 1].timestamp).toLocaleString('fr-FR');
+                const startDate = new Date(state.historicalData[0].timestamp).toLocaleDateString('fr-FR');
+                const endDate = new Date(state.historicalData[state.historicalData.length - 1].timestamp).toLocaleDateString('fr-FR');
                 
                 document.getElementById('dataPoints').textContent = state.historicalData.length;
                 document.getElementById('dataPeriod').textContent = `${startDate} → ${endDate}`;
@@ -423,14 +502,13 @@
                 
                 updateChart();
                 
-                addLog('system', '✅ DONNÉES BINANCE', `${state.historicalData.length} chandeliers RÉELS chargés (${crypto} ${interval})`);
-                console.log('✅ Loaded', state.historicalData.length, 'real candles from Binance');
-                console.log('Sample data:', state.historicalData[0]);
+                addLog('system', '✅ DONNÉES CHARGÉES', `${state.historicalData.length} chandeliers RÉELS (${symbol})`);
+                console.log('✅ Loaded', state.historicalData.length, 'candles');
                 
             } catch (error) {
                 console.error('❌ Error:', error);
                 addLog('system', '❌ ERREUR', error.message);
-                alert('❌ Erreur de chargement: ' + error.message + '\n\nEssayez une autre paire ou période.');
+                alert('❌ Erreur: ' + error.message);
                 
                 document.getElementById('loadingStatus').style.display = 'none';
                 document.getElementById('loadBtn').disabled = false;
@@ -446,13 +524,13 @@
             priceChart.data.labels = filtered.map(d => new Date(d.timestamp).toLocaleDateString('fr-FR', {
                 month: 'short',
                 day: 'numeric',
-                hour: '2-digit'
+                hour: state.selectedInterval.includes('m') || state.selectedInterval === '1h' ? '2-digit' : undefined
             }));
             priceChart.data.datasets[0].data = filtered.map(d => d.close);
             priceChart.update();
         }
 
-        // BACKTEST
+        // BACKTEST (same logic as before)
         async function startBacktest() {
             const activeCount = Object.values(state.activeAIs).filter(v => v).length;
             
@@ -466,7 +544,6 @@
                 return;
             }
             
-            // Reset
             for (const ai in state.aiStats) {
                 state.aiStats[ai] = { 
                     trades: 0, profit: 0, wins: 0, losses: 0, 
@@ -480,7 +557,7 @@
             document.getElementById('startBtn').disabled = true;
             document.getElementById('loadBtn').disabled = true;
             
-            addLog('system', '🔬 START', `Backtest ${activeCount} IA • ${state.historicalData.length} prix réels`);
+            addLog('system', '🔬 START', `Backtest ${activeCount} IA • ${state.historicalData.length} chandeliers`);
             
             await runBacktest();
             
@@ -521,7 +598,6 @@
                 if (i % 10 === 0) await new Promise(r => setTimeout(r, 1));
             }
             
-            // Close final positions
             for (const [aiName, isActive] of Object.entries(state.activeAIs)) {
                 if (!isActive) continue;
                 if (state.positions[aiName]) {
@@ -541,21 +617,17 @@
             }
         }
 
-        // INDICATORS
         function calculateRSI(prices, period = 14) {
             if (prices.length < period + 1) return 50;
-            
             let gains = 0, losses = 0;
             for (let i = prices.length - period; i < prices.length; i++) {
                 const change = prices[i] - prices[i - 1];
                 if (change > 0) gains += change;
                 else losses += Math.abs(change);
             }
-            
             const avgGain = gains / period;
             const avgLoss = losses / period;
             if (avgLoss === 0) return 100;
-            
             return 100 - (100 / (1 + (avgGain / avgLoss)));
         }
 
@@ -574,10 +646,8 @@
             return (prices[prices.length - 1] - prices[prices.length - period]) / prices[prices.length - period];
         }
 
-        // STRATEGIES
         function shouldBuy(aiName, prices, price) {
             if (prices.length < 50) return false;
-            
             const rsi = calculateRSI(prices);
             const ema20 = calculateEMA(prices, 20);
             const ema50 = calculateEMA(prices, 50);
@@ -594,35 +664,27 @@
 
         function shouldSell(aiName, position, current) {
             if (!position) return false;
-            
             const profitPercent = ((current.close - position.entryPrice) / position.entryPrice) * 100;
-            
             const strategies = {
                 claude: { tp: 2, sl: -1 },
                 gemini: { tp: 3, sl: -1.5 },
                 chatgpt: { tp: 4, sl: -2 },
                 grok: { tp: 5, sl: -2.5 }
             };
-            
             const s = strategies[aiName];
             return profitPercent >= s.tp || profitPercent <= s.sl;
         }
 
-        // EXECUTION
         function executeBuy(aiName, current) {
             const stats = state.aiStats[aiName];
             const tradeAmount = stats.capital * 0.3;
-            
             if (tradeAmount < 10) return;
             
-            const slippageCost = tradeAmount * (state.slippage / 100);
-            const fees = tradeAmount * 0.1 / 100;
-            const totalCost = tradeAmount + slippageCost + fees;
-            
+            const fees = tradeAmount * (state.fees / 100);
+            const totalCost = tradeAmount + fees;
             if (totalCost > stats.capital) return;
             
             const tokensAmount = tradeAmount / current.close;
-            
             state.positions[aiName] = {
                 entryPrice: current.close,
                 amount: tradeAmount,
@@ -632,7 +694,6 @@
             
             stats.capital -= totalCost;
             stats.trades++;
-            
             addLog(aiName, '🟢 BUY', `${tokensAmount.toFixed(6)} @ $${current.close.toFixed(2)}`);
         }
 
@@ -642,18 +703,14 @@
             
             const stats = state.aiStats[aiName];
             const sellValue = position.tokensAmount * current.close;
-            const slippageCost = sellValue * (state.slippage / 100);
-            const fees = sellValue * 0.1 / 100;
-            const netValue = sellValue - slippageCost - fees;
+            const fees = sellValue * (state.fees / 100);
+            const netValue = sellValue - fees;
             const profit = netValue - position.amount;
             const profitPercent = (profit / position.amount) * 100;
             
             stats.capital += netValue;
             stats.profit += profit;
-            
-            if (profit > 0) stats.wins++;
-            else stats.losses++;
-            
+            if (profit > 0) stats.wins++; else stats.losses++;
             stats.trades_detail.push({ profit, profitPercent });
             
             addLog(aiName, profit >= 0 ? '🟢 SELL' : '🔴 SELL', 
@@ -681,8 +738,7 @@
             const sorted = Object.entries(state.aiStats)
                 .filter(([name]) => state.activeAIs[name])
                 .map(([name, stats]) => ({
-                    name,
-                    stats,
+                    name, stats,
                     totalProfit: stats.capital - state.initialCapital,
                     roi: ((stats.capital - state.initialCapital) / state.initialCapital) * 100
                 }))
@@ -706,16 +762,10 @@
                                 ${item.totalProfit >= 0 ? '+' : ''}$${item.totalProfit.toFixed(2)}
                             </span>
                         </div>
-                        <div class="grid grid-cols-3 gap-2 text-xs text-gray-400 mb-2">
+                        <div class="grid grid-cols-3 gap-2 text-xs text-gray-400">
                             <div>Trades: <span class="text-white font-bold">${item.stats.trades}</span></div>
-                            <div>Wins: <span class="text-green-400 font-bold">${item.stats.wins}</span></div>
                             <div>WR: <span class="font-bold">${wr}%</span></div>
-                        </div>
-                        <div class="text-xs">
-                            <span class="text-gray-400">ROI: </span>
-                            <span class="font-bold ${item.roi >= 0 ? 'text-green-400' : 'text-red-400'}">
-                                ${item.roi >= 0 ? '+' : ''}${item.roi.toFixed(2)}%
-                            </span>
+                            <div>ROI: <span class="font-bold ${item.roi >= 0 ? 'text-green-400' : 'text-red-400'}">${item.roi >= 0 ? '+' : ''}${item.roi.toFixed(1)}%</span></div>
                         </div>
                     </div>
                 `;
@@ -763,8 +813,8 @@
                                 <span class="font-bold text-red-400">$${avgLoss.toFixed(2)}</span>
                             </div>
                             <div class="flex justify-between">
-                                <span class="text-gray-400">Capital final:</span>
-                                <span class="font-bold text-white">${stats.capital.toFixed(2)} USD</span>
+                                <span class="text-gray-400">Capital:</span>
+                                <span class="font-bold text-white">${stats.capital.toFixed(2)}</span>
                             </div>
                         </div>
                     </div>
@@ -815,7 +865,7 @@
             }
         }
 
-        console.log('🔬 Ready - Binance Real Data Backtesting');
+        console.log('🔬 Ready - TradingView/Yahoo Finance Data');
     </script>
 </body>
 </html>
