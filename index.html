@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🔬 AI Trading Bot - VRAIES DONNÉES HISTORIQUES</title>
+    <title>🔬 AI Trading Bot - DONNÉES BINANCE RÉELLES</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
@@ -49,11 +49,11 @@
         <!-- Header -->
         <div class="text-center mb-8">
             <h1 class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent mb-3">
-                🔬 AI Trading Bot - VRAIES DONNÉES
+                🔬 AI Trading Bot - DONNÉES BINANCE
             </h1>
-            <p class="text-gray-300 text-lg">Backtesting avec prix historiques RÉELS de CoinGecko</p>
+            <p class="text-gray-300 text-lg">Backtesting avec prix historiques RÉELS de Binance</p>
             <div class="mt-3 flex justify-center gap-4 items-center flex-wrap">
-                <span class="px-4 py-2 bg-blue-900 bg-opacity-50 text-blue-300 rounded-full font-semibold text-sm border border-blue-500">📊 CoinGecko API</span>
+                <span class="px-4 py-2 bg-blue-900 bg-opacity-50 text-blue-300 rounded-full font-semibold text-sm border border-blue-500">📊 Binance API</span>
                 <span class="px-4 py-2 bg-green-900 bg-opacity-50 text-green-300 rounded-full font-semibold text-sm border border-green-500">✅ Données Réelles</span>
                 <span class="px-4 py-2 bg-purple-900 bg-opacity-50 text-purple-300 rounded-full font-semibold text-sm border border-purple-500">🔬 Backtesting</span>
             </div>
@@ -64,12 +64,12 @@
             <h2 class="text-2xl font-bold mb-4">⚙️ Configuration</h2>
 
             <div class="bg-green-900 bg-opacity-50 border-2 border-green-500 rounded-lg p-4 mb-4">
-                <p class="text-green-200 font-bold mb-2">✅ SOURCE DES DONNÉES : COINGECKO</p>
+                <p class="text-green-200 font-bold mb-2">✅ SOURCE DES DONNÉES : BINANCE PUBLIC API</p>
                 <ul class="text-sm text-green-200 space-y-1">
-                    <li>• Prix historiques RÉELS minute par minute</li>
+                    <li>• Prix historiques RÉELS de Binance</li>
                     <li>• API publique gratuite (pas de clé requise)</li>
-                    <li>• Données vérifiables sur coingecko.com</li>
-                    <li>• Limite: 90 jours max d'historique</li>
+                    <li>• Données OHLCV complètes (Open, High, Low, Close, Volume)</li>
+                    <li>• Jusqu'à 1000 chandeliers par requête</li>
                 </ul>
             </div>
 
@@ -77,25 +77,32 @@
                 <div>
                     <label class="block text-sm text-gray-300 mb-2 font-semibold">Crypto</label>
                     <select id="cryptoSelect" class="w-full bg-gray-800 border-2 border-gray-600 rounded-lg px-4 py-3 text-white">
-                        <option value="bitcoin">Bitcoin (BTC)</option>
-                        <option value="ethereum">Ethereum (ETH)</option>
-                        <option value="binancecoin">Binance Coin (BNB)</option>
-                        <option value="cardano">Cardano (ADA)</option>
-                        <option value="solana">Solana (SOL)</option>
-                        <option value="polkadot">Polkadot (DOT)</option>
-                        <option value="ripple">Ripple (XRP)</option>
-                        <option value="dogecoin">Dogecoin (DOGE)</option>
+                        <option value="BTCUSDT">Bitcoin (BTC/USDT)</option>
+                        <option value="ETHUSDT">Ethereum (ETH/USDT)</option>
+                        <option value="BNBUSDT">Binance Coin (BNB/USDT)</option>
+                        <option value="ADAUSDT">Cardano (ADA/USDT)</option>
+                        <option value="SOLUSDT">Solana (SOL/USDT)</option>
+                        <option value="DOTUSDT">Polkadot (DOT/USDT)</option>
+                        <option value="XRPUSDT">Ripple (XRP/USDT)</option>
+                        <option value="DOGEUSDT">Dogecoin (DOGE/USDT)</option>
+                        <option value="MATICUSDT">Polygon (MATIC/USDT)</option>
+                        <option value="AVAXUSDT">Avalanche (AVAX/USDT)</option>
                     </select>
                 </div>
 
                 <div>
-                    <label class="block text-sm text-gray-300 mb-2 font-semibold">Période historique</label>
+                    <label class="block text-sm text-gray-300 mb-2 font-semibold">Période & Intervalle</label>
                     <select id="periodSelect" class="w-full bg-gray-800 border-2 border-gray-600 rounded-lg px-4 py-3 text-white">
-                        <option value="1">1 jour (minutes)</option>
-                        <option value="7" selected>7 jours (heures)</option>
-                        <option value="14">14 jours (heures)</option>
-                        <option value="30">30 jours (4 heures)</option>
-                        <option value="90">90 jours (1 jour)</option>
+                        <option value="1m-500">500 minutes (1m chandeliers)</option>
+                        <option value="5m-500">~42 heures (5m chandeliers)</option>
+                        <option value="15m-500" selected>~5 jours (15m chandeliers)</option>
+                        <option value="1h-500">~21 jours (1h chandeliers)</option>
+                        <option value="4h-500">~83 jours (4h chandeliers)</option>
+                        <option value="1d-500">~1.4 ans (1d chandeliers)</option>
+                        <option value="1m-1000">1000 minutes (1m chandeliers)</option>
+                        <option value="5m-1000">~3.5 jours (5m chandeliers)</option>
+                        <option value="15m-1000">~10 jours (15m chandeliers)</option>
+                        <option value="1h-1000">~42 jours (1h chandeliers)</option>
                     </select>
                 </div>
 
@@ -111,11 +118,11 @@
             </div>
 
             <button onclick="loadRealData()" id="loadBtn" class="w-full px-6 py-4 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white rounded-lg font-bold text-lg mb-4">
-                📥 Charger Vraies Données CoinGecko
+                📥 Charger Vraies Données Binance
             </button>
 
             <div id="loadingStatus" class="text-center text-gray-400 py-4" style="display: none;">
-                <div class="pulse text-blue-400 font-bold">⏳ Chargement depuis CoinGecko...</div>
+                <div class="pulse text-blue-400 font-bold">⏳ Chargement depuis Binance...</div>
             </div>
 
             <div id="dataStatus" class="grid grid-cols-2 md:grid-cols-4 gap-3" style="display: none;">
@@ -239,8 +246,9 @@
     <script>
         let state = {
             historicalData: [],
-            selectedCrypto: 'bitcoin',
-            selectedPeriod: 7,
+            selectedCrypto: 'BTCUSDT',
+            selectedInterval: '15m',
+            selectedLimit: 500,
             initialCapital: 1000,
             slippage: 0.5,
             fees: 0.1,
@@ -351,13 +359,15 @@
             }
         }
 
-        // COINGECKO API - VRAIES DONNÉES
+        // BINANCE API - VRAIES DONNÉES
         async function loadRealData() {
             const crypto = document.getElementById('cryptoSelect').value;
-            const days = parseInt(document.getElementById('periodSelect').value);
+            const periodConfig = document.getElementById('periodSelect').value;
+            const [interval, limit] = periodConfig.split('-');
             
             state.selectedCrypto = crypto;
-            state.selectedPeriod = days;
+            state.selectedInterval = interval;
+            state.selectedLimit = parseInt(limit);
             state.initialCapital = parseFloat(document.getElementById('initialCapital').value);
             state.slippage = parseFloat(document.getElementById('slippageInput').value);
             
@@ -366,39 +376,44 @@
             document.getElementById('loadBtn').disabled = true;
             
             try {
-                // CoinGecko API - Prix historiques RÉELS
-                const url = `https://api.coingecko.com/api/v3/coins/${crypto}/market_chart?vs_currency=usd&days=${days}&interval=hourly`;
+                // Binance Public API - Klines (Candlestick Data)
+                // Format: https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1h&limit=500
+                const url = `https://api.binance.com/api/v3/klines?symbol=${crypto}&interval=${interval}&limit=${limit}`;
                 
-                addLog('system', '📥 API', `Connexion CoinGecko pour ${crypto.toUpperCase()}...`);
-                console.log('Fetching:', url);
+                addLog('system', '📥 BINANCE API', `Chargement ${crypto} ${interval}...`);
+                console.log('Fetching from Binance:', url);
                 
                 const response = await fetch(url);
                 
                 if (!response.ok) {
-                    throw new Error(`API Error: ${response.status}`);
+                    throw new Error(`Binance API Error: ${response.status}`);
                 }
                 
                 const data = await response.json();
                 
-                // Format: prices = [[timestamp, price], ...]
-                state.historicalData = data.prices.map(([timestamp, price]) => ({
-                    timestamp: timestamp,
-                    time: new Date(timestamp).toLocaleString('fr-FR'),
-                    close: price,
-                    open: price,
-                    high: price,
-                    low: price
+                // Binance klines format:
+                // [0] Open time, [1] Open, [2] High, [3] Low, [4] Close, [5] Volume,
+                // [6] Close time, [7] Quote asset volume, [8] Number of trades, etc.
+                
+                state.historicalData = data.map(candle => ({
+                    timestamp: candle[0],
+                    time: new Date(candle[0]).toLocaleString('fr-FR'),
+                    open: parseFloat(candle[1]),
+                    high: parseFloat(candle[2]),
+                    low: parseFloat(candle[3]),
+                    close: parseFloat(candle[4]),
+                    volume: parseFloat(candle[5])
                 }));
                 
                 const prices = state.historicalData.map(d => d.close);
                 const minPrice = Math.min(...prices);
                 const maxPrice = Math.max(...prices);
                 
-                const startDate = new Date(state.historicalData[0].timestamp).toLocaleDateString('fr-FR');
-                const endDate = new Date(state.historicalData[state.historicalData.length - 1].timestamp).toLocaleDateString('fr-FR');
+                const startDate = new Date(state.historicalData[0].timestamp).toLocaleString('fr-FR');
+                const endDate = new Date(state.historicalData[state.historicalData.length - 1].timestamp).toLocaleString('fr-FR');
                 
                 document.getElementById('dataPoints').textContent = state.historicalData.length;
-                document.getElementById('dataPeriod').textContent = `${startDate} - ${endDate}`;
+                document.getElementById('dataPeriod').textContent = `${startDate} → ${endDate}`;
                 document.getElementById('dataMin').textContent = '$' + minPrice.toFixed(2);
                 document.getElementById('dataMax').textContent = '$' + maxPrice.toFixed(2);
                 
@@ -408,13 +423,14 @@
                 
                 updateChart();
                 
-                addLog('system', '✅ DONNÉES RÉELLES', `${state.historicalData.length} prix de ${crypto.toUpperCase()} chargés depuis CoinGecko`);
-                console.log('✅ Loaded', state.historicalData.length, 'real prices');
+                addLog('system', '✅ DONNÉES BINANCE', `${state.historicalData.length} chandeliers RÉELS chargés (${crypto} ${interval})`);
+                console.log('✅ Loaded', state.historicalData.length, 'real candles from Binance');
+                console.log('Sample data:', state.historicalData[0]);
                 
             } catch (error) {
                 console.error('❌ Error:', error);
                 addLog('system', '❌ ERREUR', error.message);
-                alert('❌ Erreur de chargement: ' + error.message);
+                alert('❌ Erreur de chargement: ' + error.message + '\n\nEssayez une autre paire ou période.');
                 
                 document.getElementById('loadingStatus').style.display = 'none';
                 document.getElementById('loadBtn').disabled = false;
@@ -799,7 +815,7 @@
             }
         }
 
-        console.log('🔬 Ready - CoinGecko Real Data Backtesting');
+        console.log('🔬 Ready - Binance Real Data Backtesting');
     </script>
 </body>
 </html>
