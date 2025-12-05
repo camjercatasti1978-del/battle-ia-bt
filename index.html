@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📊 Backtest IA Trading - Semaine Dernière</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Arial', sans-serif;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+        .stat-card {
+            transition: transform 0.3s;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        .trade-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            position: absolute;
+        }
+        .buy-dot { background: #10b981; }
+        .sell-dot { background: #ef4444; }
+    </style>
+</head>
+<body class="p-4 md:p-8 min-h-screen">
+    
+    <div class="max-w-7xl mx-auto">
+        
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">
+                📊 Backtest IA Trading
+            </h1>
+            <p class="text-white text-lg">
+                Performance des 4 IA sur la semaine dernière (28 Nov - 5 Déc 2024)
+            </p>
+        </div>
+
+        <!-- Configuration -->
+        <div class="card p-6 mb-6">
+            <h2 class="text-2xl font-bold mb-4 text-gray-800">⚙️ Configuration du Backtest</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Crypto</label>
+                    <select id="cryptoSelect" class="w-full p-3 border-2 border-gray-300 rounded-lg">
+                        <option value="BTCUSDT">Bitcoin (BTC)</option>
+                        <option value="ETHUSDT">Ethereum (ETH)</option>
+                        <option value="BNBUSDT">Binance Coin (BNB)</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Capital Initial</label>
+                    <input type="number" id="capitalInput" value="1000" min="100" class="w-full p-3 border-2 border-gray-300 rounded-lg">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Intervalle</label>
+                    <select id="intervalSelect" class="w-full p-3 border-2 border-gray-300 rounded-lg">
+                        <option value="5m">5 minutes</option>
+                        <option value="15m" selected>15 minutes</option>
+                        <option value="1h">1 heure</option>
+                        <option value="4h">4 heures</option>
+                    </select>
+                </div>
+            </div>
+            
+            <button id="runBacktest" class="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-bold py-4 rounded-lg transition-all shadow-lg">
+                🚀 Lancer le Backtest
+            </button>
+        </div>
+
+        <!-- Loading -->
+        <div id="loading" class="card p-8 mb-6 text-center" style="display: none;">
+            <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-purple-600 mx-auto mb-4"></div>
+            <p class="text-gray-700 font-semibold">Récupération des données historiques...</p>
+            <p class="text-gray-500 text-sm mt-2" id="loadingProgress">0%</p>
+        </div>
+
+        <!-- Results -->
+        <div id="results" style="display: none;">
+            
+            <!-- Classement -->
+            <div class="card p-6 mb-6">
+                <h2 class="text-2xl font-bold mb-4 text-gray-800">🏆 Classement Final</h2>
+                <div id="ranking" class="space-y-3"></div>
+            </div>
+
+            <!-- Stats détaillées -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6" id="aiStats"></div>
+
+            <!-- Graphique principal -->
+            <div class="card p-6 mb-6">
+                <h2 class="text-2xl font-bold mb-4 text-gray-800">📈 Évolution du Capital</h2>
+                <canvas id="capitalChart"></canvas>
+            </div>
+
+            <!-- Graphique prix avec trades -->
+            <div class="card p-6 mb-6">
+                <h2 class="text-2xl font-bold mb-4 text-gray-800">💹 Prix et Trades</h2>
+                <canvas id="priceChart"></canvas>
+            </div>
+
+            <!-- Journal des trades -->
+            <div class="card p-6">
+                <h2 class="text-2xl font-bold mb-4 text-gray-800">📝 Journal des Trades</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="bg-gray-100">
+                                <th class="p-2 text-left">IA</th>
+                                <th class="p-2 text-left">Type</th>
+                                <th class="p-2 text-left">Date</th>
+                                <th class="p-2 text-right">Prix</th>
+                                <th class="p-2 text-right">Montant</th>
+                                <th class="p-2 text-right">Profit</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tradesTable"></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        // Configuration
+        const AI_CONFIG = {
+            claude: {
+                name: 'Claude',
+                icon: '🧠',
+                color: '#10b981',
+                strategy: 'conservative',
+                buyThreshold: 0.20
+            },
+            gemini: {
+                name: 'Gemini',
+                icon: '💎',
+                color: '#3b82f6',
+                strategy: 'balanced',
+                buyThreshold: 0.40
+            },
+            chatgpt: {
+                name: 'ChatGPT',
+                icon: '🚀',
+                color: '#8b5cf6',
+                strategy: 'patterns',
+                buyThreshold: 0.35
+            },
+            grok: {
+                name: 'Grok',
+                icon: '⚡',
+                color: '#f59e0b',
+                strategy: 'aggressive',
+                buyThreshold: 0.60
+            }
+        };
+
+        let capitalChart, priceChart;
+        let backtestData = {
+            prices: [],
+            timestamps: [],
+            aiPerformance: {}
+        };
+
+        // Récupérer les données historiques
+        async function fetchHistoricalData(symbol, interval) {
+            const endTime = Date.now();
+            const startTime = endTime - (7 * 24 * 60 * 60 * 1000); // 7 jours
+            
+            // Binance API
+            const url = `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&startTime=${startTime}&endTime=${endTime}&limit=1000`;
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                return data.map(candle => ({
+                    timestamp: candle[0],
+                    open: parseFloat(candle[1]),
+                    high: parseFloat(candle[2]),
+                    low: parseFloat(candle[3]),
+                    close: parseFloat(candle[4]),
+                    volume: parseFloat(candle[5])
+                }));
+            } catch (error) {
+                console.error('Erreur récupération données:', error);
+                return [];
+            }
+        }
+
+        // Calculer RSI
+        function calculateRSI(prices, period = 14) {
+            if (prices.length < period) return 50;
+            
+            let gains = 0;
+            let losses = 0;
+            
+            for (let i = prices.length - period; i < prices.length; i++) {
+                const change = prices[i] - prices[i - 1];
+                if (change > 0) gains += change;
+                else losses += Math.abs(change);
+            }
+            
+            const avgGain = gains / period;
+            const avgLoss = losses / period;
+            
+            if (avgLoss === 0) return 100;
+            const rs = avgGain / avgLoss;
+            return 100 - (100 / (1 + rs));
+        }
+
+        // Calculer MACD
+        function calculateMACD(prices) {
+            if (prices.length < 26) return { macd: 0, signal: 0 };
+            
+            const ema12 = calculateEMA(prices, 12);
+            const ema26 = calculateEMA(prices, 26);
+            const macd = ema12 - ema26;
+            
+            return { macd, signal: 0 };
+        }
+
+        function calculateEMA(prices, period) {
+            const k = 2 / (period + 1);
+            let ema = prices[0];
+            
+            for (let i = 1; i < prices.length; i++) {
+                ema = prices[i] * k + ema * (1 - k);
+            }
+            
+            return ema;
+        }
+
+        // Stratégies de trading
+        function shouldBuy(ai, price, prices, rsi, macd) {
+            const config = AI_CONFIG[ai];
+            
+            switch (config.strategy) {
+                case 'conservative': // Claude
+                    return rsi < 30 && Math.random() < config.buyThreshold;
+                    
+                case 'balanced': // Gemini
+                    const priceChange = (price - prices[prices.length - 5]) / prices[prices.length - 5];
+                    return priceChange > 0.01 && Math.random() < config.buyThreshold;
+                    
+                case 'patterns': // ChatGPT
+                    const trend = prices.slice(-10).every((p, i, arr) => i === 0 || p >= arr[i-1]);
+                    return trend && Math.random() < config.buyThreshold;
+                    
+                case 'aggressive': // Grok
+                    return macd.macd > 0 && Math.random() < config.buyThreshold;
+                    
+                default:
+                    return false;
+            }
+        }
+
+        function shouldSell(ai, entryPrice, currentPrice, holdTime, rsi) {
+            const profitPercent = ((currentPrice - entryPrice) / entryPrice) * 100;
+            const config = AI_CONFIG[ai];
+            
+            switch (config.strategy) {
+                case 'conservative': // Claude - Take profit rapide
+                    return profitPercent > 1.5 || profitPercent < -1 || holdTime > 20;
+                    
+                case 'balanced': // Gemini
+                    return profitPercent > 2 || profitPercent < -1.5 || holdTime > 30;
+                    
+                case 'patterns': // ChatGPT
+                    return profitPercent > 3 || profitPercent < -2 || rsi > 70;
+                    
+                case 'aggressive': // Grok - Hold plus longtemps
+                    return profitPercent > 4 || profitPercent < -2.5 || holdTime > 40;
+                    
+                default:
+                    return false;
+            }
+        }
+
+        // Exécuter le backtest
+        async function runBacktest() {
+            const symbol = document.getElementById('cryptoSelect').value;
+            const capital = parseFloat(document.getElementById('capitalInput').value);
+            const interval = document.getElementById('intervalSelect').value;
+            
+            // Afficher loading
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('results').style.display = 'none';
+            
+            // Récupérer les données
+            document.getElementById('loadingProgress').textContent = 'Récupération des données...';
+            const historicalData = await fetchHistoricalData(symbol, interval);
+            
+            if (historicalData.length === 0) {
+                alert('Erreur lors de la récupération des données');
+                document.getElementById('loading').style.display = 'none';
+                return;
+            }
+            
+            // Initialiser les IA
+            const aiStates = {};
+            Object.keys(AI_CONFIG).forEach(ai => {
+                aiStates[ai] = {
+                    capital: capital,
+                    position: null,
+                    trades: [],
+                    capitalHistory: [capital]
+                };
+            });
+            
+            // Simuler le trading
+            const prices = historicalData.map(d => d.close);
+            
+            for (let i = 50; i < historicalData.length; i++) {
+                const currentPrice = historicalData[i].close;
+                const timestamp = historicalData[i].timestamp;
+                const rsi = calculateRSI(prices.slice(0, i + 1));
+                const macd = calculateMACD(prices.slice(0, i + 1));
+                
+                document.getElementById('loadingProgress').textContent = 
+                    `Simulation en cours... ${Math.round((i / historicalData.length) * 100)}%`;
+                
+                // Chaque IA prend une décision
+                for (const [aiName, state] of Object.entries(aiStates)) {
+                    if (!state.position) {
+                        // Pas de position - Regarder si on achète
+                        if (shouldBuy(aiName, currentPrice, prices.slice(0, i + 1), rsi, macd)) {
+                            const tradeAmount = state.capital * 0.3; // 30% du capital
+                            const tokens = tradeAmount / currentPrice;
+                            
+                            state.position = {
+                                entryPrice: currentPrice,
+                                entryTime: i,
+                                amount: tradeAmount,
+                                tokens: tokens,
+                                timestamp: timestamp
+                            };
+                            
+                            state.trades.push({
+                                type: 'BUY',
+                                price: currentPrice,
+                                amount: tradeAmount,
+                                timestamp: timestamp,
+                                index: i
+                            });
+                        }
+                    } else {
+                        // Position ouverte - Regarder si on vend
+                        const holdTime = i - state.position.entryTime;
+                        
+                        if (shouldSell(aiName, state.position.entryPrice, currentPrice, holdTime, rsi)) {
+                            const sellValue = state.position.tokens * currentPrice;
+                            const profit = sellValue - state.position.amount;
+                            
+                            state.capital += profit;
+                            
+                            state.trades.push({
+                                type: 'SELL',
+                                price: currentPrice,
+                                amount: sellValue,
+                                profit: profit,
+                                timestamp: timestamp,
+                                index: i,
+                                holdTime: holdTime
+                            });
+                            
+                            state.position = null;
+                        }
+                    }
+                    
+                    // Calculer le capital actuel (incluant position ouverte)
+                    let currentCapital = state.capital;
+                    if (state.position) {
+                        currentCapital += (state.position.tokens * currentPrice) - state.position.amount;
+                    }
+                    state.capitalHistory.push(currentCapital);
+                }
+            }
+            
+            // Afficher les résultats
+            backtestData = {
+                prices: historicalData,
+                aiStates: aiStates,
+                symbol: symbol
+            };
+            
+            displayResults();
+        }
+
+        // Afficher les résultats
+        function displayResults() {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('results').style.display = 'block';
+            
+            const { aiStates, prices, symbol } = backtestData;
+            
+            // Calculer les stats
+            const rankings = Object.entries(aiStates).map(([name, state]) => {
+                const finalCapital = state.capitalHistory[state.capitalHistory.length - 1];
+                const initialCapital = state.capitalHistory[0];
+                const profit = finalCapital - initialCapital;
+                const profitPercent = (profit / initialCapital) * 100;
+                
+                const wins = state.trades.filter(t => t.type === 'SELL' && t.profit > 0).length;
+                const losses = state.trades.filter(t => t.type === 'SELL' && t.profit < 0).length;
+                const winRate = wins + losses > 0 ? (wins / (wins + losses)) * 100 : 0;
+                
+                return {
+                    name,
+                    config: AI_CONFIG[name],
+                    finalCapital,
+                    profit,
+                    profitPercent,
+                    trades: state.trades.length,
+                    wins,
+                    losses,
+                    winRate
+                };
+            }).sort((a, b) => b.profit - a.profit);
+            
+            // Afficher le classement
+            const rankingHTML = rankings.map((ai, index) => {
+                const medals = ['🥇', '🥈', '🥉', '4️⃣'];
+                const profitColor = ai.profit >= 0 ? 'text-green-600' : 'text-red-600';
+                
+                return `
+                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                        <div class="flex items-center gap-3">
+                            <span class="text-2xl">${medals[index]}</span>
+                            <span class="text-2xl">${ai.config.icon}</span>
+                            <div>
+                                <p class="font-bold text-gray-800">${ai.config.name}</p>
+                                <p class="text-sm text-gray-600">${ai.trades} trades • ${ai.winRate.toFixed(1)}% win rate</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-bold ${profitColor}">${ai.profit >= 0 ? '+' : ''}$${ai.profit.toFixed(2)}</p>
+                            <p class="text-sm ${profitColor}">${ai.profitPercent >= 0 ? '+' : ''}${ai.profitPercent.toFixed(2)}%</p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            document.getElementById('ranking').innerHTML = rankingHTML;
+            
+            // Stats détaillées
+            const statsHTML = rankings.map(ai => `
+                <div class="card p-6 stat-card">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-3xl">${ai.config.icon}</span>
+                        <h3 class="font-bold text-gray-800">${ai.config.name}</h3>
+                    </div>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Capital final:</span>
+                            <span class="font-bold">$${ai.finalCapital.toFixed(2)}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Profit:</span>
+                            <span class="font-bold ${ai.profit >= 0 ? 'text-green-600' : 'text-red-600'}">
+                                ${ai.profit >= 0 ? '+' : ''}$${ai.profit.toFixed(2)}
+                            </span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Trades:</span>
+                            <span class="font-bold">${ai.trades}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Wins/Losses:</span>
+                            <span class="font-bold">${ai.wins}/${ai.losses}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Win Rate:</span>
+                            <span class="font-bold">${ai.winRate.toFixed(1)}%</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            document.getElementById('aiStats').innerHTML = statsHTML;
+            
+            // Graphique évolution capital
+            drawCapitalChart(aiStates);
+            
+            // Graphique prix avec trades
+            drawPriceChart(prices, aiStates);
+            
+            // Journal des trades
+            drawTradesTable(aiStates);
+        }
+
+        // Graphique capital
+        function drawCapitalChart(aiStates) {
+            const ctx = document.getElementById('capitalChart').getContext('2d');
+            
+            if (capitalChart) capitalChart.destroy();
+            
+            const datasets = Object.entries(aiStates).map(([name, state]) => ({
+                label: AI_CONFIG[name].name,
+                data: state.capitalHistory,
+                borderColor: AI_CONFIG[name].color,
+                backgroundColor: AI_CONFIG[name].color + '20',
+                tension: 0.4
+            }));
+            
+            capitalChart = new Chart(ctx, {
+                type: 'line',
+                data: { datasets },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'top' },
+                        title: {
+                            display: true,
+                            text: 'Évolution du Capital ($)'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            ticks: {
+                                callback: value => '$' + value.toFixed(0)
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Graphique prix
+        function drawPriceChart(prices, aiStates) {
+            const ctx = document.getElementById('priceChart').getContext('2d');
+            
+            if (priceChart) priceChart.destroy();
+            
+            const priceData = prices.map(p => p.close);
+            const labels = prices.map((p, i) => i);
+            
+            priceChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'Prix',
+                        data: priceData,
+                        borderColor: '#6366f1',
+                        backgroundColor: '#6366f120',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'top' }
+                    }
+                }
+            });
+        }
+
+        // Table des trades
+        function drawTradesTable(aiStates) {
+            const allTrades = [];
+            
+            Object.entries(aiStates).forEach(([aiName, state]) => {
+                state.trades.forEach(trade => {
+                    allTrades.push({
+                        ...trade,
+                        aiName,
+                        config: AI_CONFIG[aiName]
+                    });
+                });
+            });
+            
+            allTrades.sort((a, b) => b.timestamp - a.timestamp);
+            
+            const tradesHTML = allTrades.slice(0, 50).map(trade => {
+                const date = new Date(trade.timestamp).toLocaleString('fr-FR');
+                const typeColor = trade.type === 'BUY' ? 'text-green-600' : 'text-red-600';
+                const profitHTML = trade.profit !== undefined ? 
+                    `<span class="${trade.profit >= 0 ? 'text-green-600' : 'text-red-600'} font-bold">
+                        ${trade.profit >= 0 ? '+' : ''}$${trade.profit.toFixed(2)}
+                    </span>` : '-';
+                
+                return `
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="p-2">
+                            <span class="text-lg">${trade.config.icon}</span>
+                            ${trade.config.name}
+                        </td>
+                        <td class="p-2 ${typeColor} font-bold">${trade.type}</td>
+                        <td class="p-2 text-gray-600 text-xs">${date}</td>
+                        <td class="p-2 text-right">$${trade.price.toFixed(2)}</td>
+                        <td class="p-2 text-right">$${trade.amount.toFixed(2)}</td>
+                        <td class="p-2 text-right">${profitHTML}</td>
+                    </tr>
+                `;
+            }).join('');
+            
+            document.getElementById('tradesTable').innerHTML = tradesHTML;
+        }
+
+        // Event listeners
+        document.getElementById('runBacktest').addEventListener('click', runBacktest);
+    </script>
+
+</body>
+</html>
