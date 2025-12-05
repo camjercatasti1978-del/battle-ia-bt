@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🔬 AI Trading Bot - BACKTESTING</title>
+    <title>🔬 AI Trading Bot - VRAIES DONNÉES HISTORIQUES</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
@@ -41,16 +41,6 @@
         .pulse {
             animation: pulse 2s ease-in-out infinite;
         }
-        .status-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 8px;
-        }
-        .status-running { background: #10b981; box-shadow: 0 0 10px #10b981; animation: pulse 1s infinite; }
-        .status-stopped { background: #ef4444; }
-        .status-ready { background: #f59e0b; }
     </style>
 </head>
 <body class="p-4 md:p-6">
@@ -58,57 +48,54 @@
         
         <!-- Header -->
         <div class="text-center mb-8">
-            <div class="flex items-center justify-center gap-3 mb-3">
-                <span class="status-dot status-ready"></span>
-                <h1 class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
-                    🔬 AI Trading Bot - BACKTESTING
-                </h1>
-            </div>
-            <p class="text-gray-300 text-lg">Testez vos stratégies avec des données historiques RÉELLES de Binance</p>
+            <h1 class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent mb-3">
+                🔬 AI Trading Bot - VRAIES DONNÉES
+            </h1>
+            <p class="text-gray-300 text-lg">Backtesting avec prix historiques RÉELS de CoinGecko</p>
             <div class="mt-3 flex justify-center gap-4 items-center flex-wrap">
-                <span class="px-4 py-2 bg-blue-900 bg-opacity-50 text-blue-300 rounded-full font-semibold text-sm border border-blue-500">📊 Données Binance</span>
-                <span class="px-4 py-2 bg-purple-900 bg-opacity-50 text-purple-300 rounded-full font-semibold text-sm border border-purple-500">🔬 Mode Test</span>
-                <span class="px-4 py-2 bg-green-900 bg-opacity-50 text-green-300 rounded-full font-semibold text-sm border border-green-500">✅ Sans Risque</span>
+                <span class="px-4 py-2 bg-blue-900 bg-opacity-50 text-blue-300 rounded-full font-semibold text-sm border border-blue-500">📊 CoinGecko API</span>
+                <span class="px-4 py-2 bg-green-900 bg-opacity-50 text-green-300 rounded-full font-semibold text-sm border border-green-500">✅ Données Réelles</span>
+                <span class="px-4 py-2 bg-purple-900 bg-opacity-50 text-purple-300 rounded-full font-semibold text-sm border border-purple-500">🔬 Backtesting</span>
             </div>
         </div>
 
-        <!-- Configuration Backtesting -->
+        <!-- Configuration -->
         <div class="card p-6 mb-6">
-            <h2 class="text-2xl font-bold mb-4">⚙️ Configuration du Backtest</h2>
+            <h2 class="text-2xl font-bold mb-4">⚙️ Configuration</h2>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+            <div class="bg-green-900 bg-opacity-50 border-2 border-green-500 rounded-lg p-4 mb-4">
+                <p class="text-green-200 font-bold mb-2">✅ SOURCE DES DONNÉES : COINGECKO</p>
+                <ul class="text-sm text-green-200 space-y-1">
+                    <li>• Prix historiques RÉELS minute par minute</li>
+                    <li>• API publique gratuite (pas de clé requise)</li>
+                    <li>• Données vérifiables sur coingecko.com</li>
+                    <li>• Limite: 90 jours max d'historique</li>
+                </ul>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
-                    <label class="block text-sm text-gray-300 mb-2 font-semibold">Paire de trading</label>
+                    <label class="block text-sm text-gray-300 mb-2 font-semibold">Crypto</label>
                     <select id="cryptoSelect" class="w-full bg-gray-800 border-2 border-gray-600 rounded-lg px-4 py-3 text-white">
-                        <option value="BTCUSDT">BTC/USDT</option>
-                        <option value="ETHUSDT">ETH/USDT</option>
-                        <option value="BNBUSDT">BNB/USDT</option>
-                        <option value="ADAUSDT">ADA/USDT</option>
-                        <option value="SOLUSDT">SOL/USDT</option>
-                        <option value="DOTUSDT">DOT/USDT</option>
+                        <option value="bitcoin">Bitcoin (BTC)</option>
+                        <option value="ethereum">Ethereum (ETH)</option>
+                        <option value="binancecoin">Binance Coin (BNB)</option>
+                        <option value="cardano">Cardano (ADA)</option>
+                        <option value="solana">Solana (SOL)</option>
+                        <option value="polkadot">Polkadot (DOT)</option>
+                        <option value="ripple">Ripple (XRP)</option>
+                        <option value="dogecoin">Dogecoin (DOGE)</option>
                     </select>
                 </div>
 
                 <div>
-                    <label class="block text-sm text-gray-300 mb-2 font-semibold">Période</label>
+                    <label class="block text-sm text-gray-300 mb-2 font-semibold">Période historique</label>
                     <select id="periodSelect" class="w-full bg-gray-800 border-2 border-gray-600 rounded-lg px-4 py-3 text-white">
-                        <option value="1h">1 heure (60 points)</option>
-                        <option value="4h">4 heures (240 points)</option>
-                        <option value="1d" selected>1 jour (1440 points)</option>
-                        <option value="3d">3 jours (4320 points)</option>
-                        <option value="7d">7 jours (10080 points)</option>
-                        <option value="30d">30 jours (43200 points)</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label class="block text-sm text-gray-300 mb-2 font-semibold">Intervalle</label>
-                    <select id="intervalSelect" class="w-full bg-gray-800 border-2 border-gray-600 rounded-lg px-4 py-3 text-white">
-                        <option value="1m">1 minute</option>
-                        <option value="5m" selected>5 minutes</option>
-                        <option value="15m">15 minutes</option>
-                        <option value="1h">1 heure</option>
-                        <option value="4h">4 heures</option>
+                        <option value="1">1 jour (minutes)</option>
+                        <option value="7" selected>7 jours (heures)</option>
+                        <option value="14">14 jours (heures)</option>
+                        <option value="30">30 jours (4 heures)</option>
+                        <option value="90">90 jours (1 jour)</option>
                     </select>
                 </div>
 
@@ -121,34 +108,24 @@
                     <label class="block text-sm text-gray-300 mb-2 font-semibold">Slippage (%)</label>
                     <input type="number" id="slippageInput" value="0.5" min="0" max="5" step="0.1" class="w-full bg-gray-800 border-2 border-gray-600 rounded-lg px-4 py-3 text-white">
                 </div>
-
-                <div>
-                    <label class="block text-sm text-gray-300 mb-2 font-semibold">Frais de trading (%)</label>
-                    <input type="number" id="feesInput" value="0.1" min="0" max="1" step="0.05" class="w-full bg-gray-800 border-2 border-gray-600 rounded-lg px-4 py-3 text-white">
-                </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <button onclick="loadHistoricalData()" id="loadBtn" class="px-6 py-4 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white rounded-lg font-bold text-lg">
-                    📥 Charger Données Historiques
-                </button>
-                <button onclick="startBacktest()" id="startBtn" class="px-6 py-4 bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white rounded-lg font-bold text-lg" disabled>
-                    🚀 Lancer Backtest
-                </button>
+            <button onclick="loadRealData()" id="loadBtn" class="w-full px-6 py-4 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white rounded-lg font-bold text-lg mb-4">
+                📥 Charger Vraies Données CoinGecko
+            </button>
+
+            <div id="loadingStatus" class="text-center text-gray-400 py-4" style="display: none;">
+                <div class="pulse text-blue-400 font-bold">⏳ Chargement depuis CoinGecko...</div>
             </div>
 
-            <div id="loadingStatus" class="mt-4 text-center text-gray-400" style="display: none;">
-                <div class="pulse text-blue-400 font-bold">⏳ Chargement des données depuis Binance...</div>
-            </div>
-
-            <div id="dataStatus" class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3" style="display: none;">
+            <div id="dataStatus" class="grid grid-cols-2 md:grid-cols-4 gap-3" style="display: none;">
                 <div class="bg-blue-900 bg-opacity-30 border border-blue-600 rounded-lg p-3">
-                    <p class="text-xs text-gray-400">Points de données</p>
+                    <p class="text-xs text-gray-400">Points de prix</p>
                     <p class="font-bold text-blue-400" id="dataPoints">0</p>
                 </div>
                 <div class="bg-green-900 bg-opacity-30 border border-green-600 rounded-lg p-3">
                     <p class="text-xs text-gray-400">Période</p>
-                    <p class="font-bold text-green-400" id="dataPeriod">-</p>
+                    <p class="font-bold text-green-400 text-xs" id="dataPeriod">-</p>
                 </div>
                 <div class="bg-yellow-900 bg-opacity-30 border border-yellow-600 rounded-lg p-3">
                     <p class="text-xs text-gray-400">Prix min</p>
@@ -166,21 +143,25 @@
             <h2 class="text-2xl font-bold mb-4">🤖 Sélection des IA</h2>
             
             <div class="bg-blue-900 bg-opacity-50 border-2 border-blue-500 rounded-lg p-4 mb-4">
-                <p class="text-blue-200 font-bold mb-2">ℹ️ STRATÉGIES DES IA</p>
+                <p class="text-blue-200 font-bold mb-2">ℹ️ STRATÉGIES</p>
                 <ul class="text-sm text-blue-200 space-y-1">
-                    <li>• <strong>🧠 Claude:</strong> Conservateur - RSI < 30, take profit +2%, stop loss -1%</li>
-                    <li>• <strong>💎 Gemini:</strong> Équilibré - RSI < 35, take profit +3%, stop loss -1.5%</li>
-                    <li>• <strong>🚀 ChatGPT:</strong> Momentum - EMA cross, take profit +4%, stop loss -2%</li>
-                    <li>• <strong>⚡ Grok:</strong> Agressif - Momentum > 2%, take profit +5%, stop loss -2.5%</li>
+                    <li>• <strong>🧠 Claude:</strong> Conservateur - RSI < 30, TP +2%, SL -1%</li>
+                    <li>• <strong>💎 Gemini:</strong> Équilibré - RSI < 35, TP +3%, SL -1.5%</li>
+                    <li>• <strong>🚀 ChatGPT:</strong> Momentum - EMA cross, TP +4%, SL -2%</li>
+                    <li>• <strong>⚡ Grok:</strong> Agressif - Momentum > 2%, TP +5%, SL -2.5%</li>
                 </ul>
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4" id="aiCards"></div>
+
+            <button onclick="startBacktest()" id="startBtn" class="w-full px-6 py-4 bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white rounded-lg font-bold text-lg" disabled>
+                🚀 Lancer Backtest
+            </button>
         </div>
 
-        <!-- Progression du Backtest -->
+        <!-- Progress -->
         <div class="card p-6 mb-6" id="progressSection" style="display: none;">
-            <h2 class="text-2xl font-bold mb-4">⏱️ Progression du Backtest</h2>
+            <h2 class="text-2xl font-bold mb-4">⏱️ Progression</h2>
             
             <div class="mb-4">
                 <div class="flex justify-between mb-2">
@@ -188,55 +169,55 @@
                     <span class="font-bold text-green-400" id="progressPercent">0%</span>
                 </div>
                 <div class="w-full bg-gray-800 rounded-full h-4">
-                    <div id="progressBar" class="bg-gradient-to-r from-green-500 to-teal-500 h-4 rounded-full transition-all duration-300" style="width: 0%"></div>
+                    <div id="progressBar" class="bg-gradient-to-r from-green-500 to-teal-500 h-4 rounded-full transition-all" style="width: 0%"></div>
                 </div>
             </div>
 
             <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
                 <div class="bg-gray-800 border border-gray-600 rounded-lg p-3">
-                    <p class="text-xs text-gray-400">Point actuel</p>
+                    <p class="text-xs text-gray-400">Point</p>
                     <p class="font-bold text-white" id="currentPoint">0 / 0</p>
                 </div>
                 <div class="bg-blue-900 bg-opacity-30 border border-blue-600 rounded-lg p-3">
-                    <p class="text-xs text-gray-400">Timestamp</p>
+                    <p class="text-xs text-gray-400">Date</p>
                     <p class="font-bold text-blue-400 text-xs" id="currentTime">-</p>
                 </div>
                 <div class="bg-green-900 bg-opacity-30 border border-green-600 rounded-lg p-3">
-                    <p class="text-xs text-gray-400">Prix actuel</p>
+                    <p class="text-xs text-gray-400">Prix</p>
                     <p class="font-bold text-green-400" id="currentPrice">$0</p>
                 </div>
                 <div class="bg-purple-900 bg-opacity-30 border border-purple-600 rounded-lg p-3">
-                    <p class="text-xs text-gray-400">Trades totaux</p>
+                    <p class="text-xs text-gray-400">Trades</p>
                     <p class="font-bold text-purple-400" id="totalTrades">0</p>
                 </div>
             </div>
         </div>
 
-        <!-- Prix & Classement -->
+        <!-- Chart & Leaderboard -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
             <div class="lg:col-span-2 card p-6">
-                <h2 class="text-2xl font-bold mb-4">📈 Prix Historiques</h2>
+                <h2 class="text-2xl font-bold mb-4">📈 Prix Historiques Réels</h2>
                 <div class="h-80">
                     <canvas id="priceChart"></canvas>
                 </div>
             </div>
 
             <div class="card p-6">
-                <h2 class="text-2xl font-bold mb-4">🏆 Classement Final</h2>
+                <h2 class="text-2xl font-bold mb-4">🏆 Classement</h2>
                 <div id="leaderboard" class="space-y-3">
                     <div class="bg-gray-800 bg-opacity-50 rounded-lg p-4">
-                        <p class="text-center text-gray-400">Lancez un backtest</p>
+                        <p class="text-center text-gray-400">Chargez des données</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Statistiques Détaillées -->
+        <!-- Stats -->
         <div class="card p-6 mb-6">
             <h2 class="text-2xl font-bold mb-4">📊 Statistiques Détaillées</h2>
             <div id="detailedStats" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div class="bg-gray-800 bg-opacity-50 rounded-lg p-4">
-                    <p class="text-center text-gray-400">Aucune statistique disponible</p>
+                    <p class="text-center text-gray-400">Pas de stats</p>
                 </div>
             </div>
         </div>
@@ -244,34 +225,22 @@
         <!-- Logs -->
         <div class="card p-6">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="text-2xl font-bold">📋 Journal des Transactions</h2>
+                <h2 class="text-2xl font-bold">📋 Journal</h2>
                 <button onclick="clearLogs()" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm">
                     🗑️ Effacer
                 </button>
             </div>
             <div id="tradeLogs" class="trade-log space-y-2">
-                <div class="text-center text-gray-500 py-8">En attente de backtest...</div>
+                <div class="text-center text-gray-500 py-8">Chargez des données...</div>
             </div>
         </div>
     </div>
 
     <script>
-        // ============= CONFIG =============
-        const CONFIG = {
-            // Using CORS proxy for Binance API
-            BINANCE_API: 'https://api.binance.com/api/v3',
-            CORS_PROXY: 'https://corsproxy.io/?',
-            SLIPPAGE: 0.5,
-            FEES: 0.1,
-            INITIAL_CAPITAL: 1000
-        };
-
-        // ============= STATE =============
         let state = {
             historicalData: [],
-            selectedCrypto: 'BTCUSDT',
-            selectedPeriod: '1d',
-            selectedInterval: '5m',
+            selectedCrypto: 'bitcoin',
+            selectedPeriod: 7,
             initialCapital: 1000,
             slippage: 0.5,
             fees: 0.1,
@@ -283,56 +252,17 @@
                 grok: { trades: 0, profit: 0, wins: 0, losses: 0, capital: 0, trades_detail: [] }
             },
             positions: { claude: null, gemini: null, chatgpt: null, grok: null },
-            backtestRunning: false,
             tradeLogs: [],
             currentIndex: 0
         };
 
         let priceChart = null;
 
-        // ============= INIT =============
         window.addEventListener('DOMContentLoaded', () => {
-            console.log('🔬 BACKTESTING BOT LOADED');
+            console.log('🔬 BACKTEST - VRAIES DONNÉES');
             initChart();
             renderAICards();
         });
-
-        function renderAICards() {
-            const ais = [
-                { id: 'claude', icon: '🧠', name: 'Claude', desc: 'Conservateur • RSI-based' },
-                { id: 'gemini', icon: '💎', name: 'Gemini', desc: 'Équilibré • Multi-facteur' },
-                { id: 'chatgpt', icon: '🚀', name: 'ChatGPT', desc: 'Momentum • EMA cross' },
-                { id: 'grok', icon: '⚡', name: 'Grok', desc: 'Agressif • High frequency' }
-            ];
-
-            const container = document.getElementById('aiCards');
-            container.innerHTML = ais.map(ai => `
-                <div class="ai-card rounded-xl p-5" id="card-${ai.id}">
-                    <div class="flex items-center justify-between mb-3">
-                        <div class="flex items-center gap-2">
-                            <span class="text-3xl">${ai.icon}</span>
-                            <h3 class="text-xl font-bold">${ai.name}</h3>
-                        </div>
-                        <input type="checkbox" id="ai-${ai.id}" onclick="toggleAI('${ai.id}')" class="w-5 h-5 cursor-pointer">
-                    </div>
-                    <p class="text-sm text-gray-400 mb-3">${ai.desc}</p>
-                    <div class="space-y-2 text-xs">
-                        <div class="flex justify-between">
-                            <span class="text-gray-400">Trades:</span>
-                            <span id="${ai.id}-trades" class="font-bold text-green-400">0</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-400">Profit:</span>
-                            <span id="${ai.id}-profit" class="font-bold text-green-400">$0.00</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-400">Win Rate:</span>
-                            <span id="${ai.id}-winrate" class="font-bold">0%</span>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
 
         function initChart() {
             const ctx = document.getElementById('priceChart').getContext('2d');
@@ -341,7 +271,7 @@
                 data: {
                     labels: [],
                     datasets: [{
-                        label: 'Prix',
+                        label: 'Prix USD',
                         data: [],
                         borderColor: '#10b981',
                         backgroundColor: 'rgba(16, 185, 129, 0.1)',
@@ -356,241 +286,59 @@
                     maintainAspectRatio: false,
                     plugins: { 
                         legend: { display: false },
-                        tooltip: {
-                            mode: 'index',
-                            intersect: false
-                        }
+                        tooltip: { mode: 'index', intersect: false }
                     },
                     scales: {
                         x: { 
                             grid: { color: 'rgba(255, 255, 255, 0.1)' }, 
-                            ticks: { 
-                                color: 'white',
-                                maxTicksLimit: 10
-                            } 
+                            ticks: { color: 'white', maxTicksLimit: 10 } 
                         },
                         y: { 
                             grid: { color: 'rgba(255, 255, 255, 0.1)' }, 
                             ticks: { color: 'white' } 
                         }
-                    },
-                    interaction: {
-                        mode: 'nearest',
-                        axis: 'x',
-                        intersect: false
                     }
                 }
             });
         }
 
-        // ============= BINANCE API =============
-        
-        function generateRealisticData(crypto, interval, startTime, endTime) {
-            console.log('🎲 Generating realistic market data...');
-            
-            // Base prices for different cryptos (approximate current prices)
-            const basePrices = {
-                'BTCUSDT': 42000,
-                'ETHUSDT': 2200,
-                'BNBUSDT': 310,
-                'ADAUSDT': 0.45,
-                'SOLUSDT': 95,
-                'DOTUSDT': 6.5
-            };
-            
-            const basePrice = basePrices[crypto] || 100;
-            
-            // Calculate number of candles based on interval
-            const intervalMinutes = {
-                '1m': 1,
-                '5m': 5,
-                '15m': 15,
-                '1h': 60,
-                '4h': 240
-            };
-            
-            const minutes = intervalMinutes[interval] || 5;
-            const duration = endTime - startTime;
-            const numCandles = Math.min(1000, Math.floor(duration / (minutes * 60 * 1000)));
-            
-            const data = [];
-            let currentPrice = basePrice;
-            let currentTime = startTime;
-            
-            // Add trend and volatility
-            const trendDirection = Math.random() > 0.5 ? 1 : -1;
-            const volatility = 0.02; // 2% volatility per candle
-            
-            for (let i = 0; i < numCandles; i++) {
-                // Random walk with trend
-                const trend = trendDirection * 0.0002 * basePrice;
-                const randomChange = (Math.random() - 0.5) * volatility * basePrice;
-                currentPrice = currentPrice + trend + randomChange;
-                
-                // Ensure price doesn't go too low
-                currentPrice = Math.max(currentPrice, basePrice * 0.7);
-                
-                // Generate OHLC
-                const high = currentPrice * (1 + Math.random() * 0.01);
-                const low = currentPrice * (1 - Math.random() * 0.01);
-                const open = low + Math.random() * (high - low);
-                const close = low + Math.random() * (high - low);
-                const volume = (1000 + Math.random() * 5000) * basePrice;
-                
-                data.push([
-                    currentTime,
-                    open.toFixed(8),
-                    high.toFixed(8),
-                    low.toFixed(8),
-                    close.toFixed(8),
-                    volume.toFixed(8),
-                    currentTime + (minutes * 60 * 1000) - 1,
-                    (volume * close).toFixed(8),
-                    Math.floor(Math.random() * 1000),
-                    (volume * 0.6).toFixed(8),
-                    (volume * close * 0.6).toFixed(8),
-                    "0"
-                ]);
-                
-                currentTime += minutes * 60 * 1000;
-                currentPrice = close;
-            }
-            
-            console.log(`✅ Generated ${data.length} realistic candles for ${crypto}`);
-            return data;
-        }
-        
-        async function loadHistoricalData() {
-            const crypto = document.getElementById('cryptoSelect').value;
-            const period = document.getElementById('periodSelect').value;
-            const interval = document.getElementById('intervalSelect').value;
-            
-            state.selectedCrypto = crypto;
-            state.selectedPeriod = period;
-            state.selectedInterval = interval;
-            state.initialCapital = parseFloat(document.getElementById('initialCapital').value);
-            state.slippage = parseFloat(document.getElementById('slippageInput').value);
-            state.fees = parseFloat(document.getElementById('feesInput').value);
-            
-            document.getElementById('loadingStatus').style.display = 'block';
-            document.getElementById('dataStatus').style.display = 'none';
-            document.getElementById('loadBtn').disabled = true;
-            
-            try {
-                // Calculer la période en millisecondes
-                const periodMap = {
-                    '1h': 60 * 60 * 1000,
-                    '4h': 4 * 60 * 60 * 1000,
-                    '1d': 24 * 60 * 60 * 1000,
-                    '3d': 3 * 24 * 60 * 60 * 1000,
-                    '7d': 7 * 24 * 60 * 60 * 1000,
-                    '30d': 30 * 24 * 60 * 60 * 1000
-                };
-                
-                const endTime = Date.now();
-                const startTime = endTime - periodMap[period];
-                
-                let data;
-                
-                // Try direct Binance API first
-                try {
-                    const binanceUrl = `${CONFIG.BINANCE_API}/klines?symbol=${crypto}&interval=${interval}&startTime=${startTime}&endTime=${endTime}&limit=1000`;
-                    console.log('📥 Trying direct Binance API...');
-                    
-                    const response = await fetch(binanceUrl);
-                    if (response.ok) {
-                        data = await response.json();
-                        console.log('✅ Direct API success');
-                    } else {
-                        throw new Error('Direct API failed');
-                    }
-                } catch (error) {
-                    console.log('⚠️ Direct API failed, trying CORS proxy...');
-                    
-                    // Try with CORS proxy
-                    try {
-                        const proxyUrl = `${CONFIG.CORS_PROXY}${encodeURIComponent(CONFIG.BINANCE_API + '/klines?symbol=' + crypto + '&interval=' + interval + '&startTime=' + startTime + '&endTime=' + endTime + '&limit=1000')}`;
-                        
-                        const response = await fetch(proxyUrl);
-                        if (response.ok) {
-                            data = await response.json();
-                            console.log('✅ CORS proxy success');
-                        } else {
-                            throw new Error('CORS proxy failed');
-                        }
-                    } catch (proxyError) {
-                        console.log('⚠️ CORS proxy failed, generating realistic data...');
-                        // Generate realistic data based on current crypto prices
-                        data = generateRealisticData(crypto, interval, startTime, endTime);
-                    }
-                }
-                
-                // Formater les données
-                state.historicalData = data.map(candle => ({
-                    timestamp: candle[0],
-                    time: new Date(candle[0]).toLocaleString('fr-FR'),
-                    open: parseFloat(candle[1]),
-                    high: parseFloat(candle[2]),
-                    low: parseFloat(candle[3]),
-                    close: parseFloat(candle[4]),
-                    volume: parseFloat(candle[5])
-                }));
-                
-                console.log('✅ Loaded', state.historicalData.length, 'data points');
-                
-                // Determine data source
-                const dataSource = data.length > 0 && typeof data[0][0] === 'number' ? 
-                    (data.length === state.historicalData.length ? '📊 Données réelles Binance' : '🎲 Données simulées réalistes') :
-                    '🎲 Données simulées réalistes';
-                
-                // Afficher les statistiques
-                const prices = state.historicalData.map(d => d.close);
-                const minPrice = Math.min(...prices);
-                const maxPrice = Math.max(...prices);
-                
-                document.getElementById('dataPoints').textContent = state.historicalData.length;
-                document.getElementById('dataPeriod').textContent = dataSource;
-                document.getElementById('dataMin').textContent = '$' + minPrice.toFixed(2);
-                document.getElementById('dataMax').textContent = '$' + maxPrice.toFixed(2);
-                
-                document.getElementById('loadingStatus').style.display = 'none';
-                document.getElementById('dataStatus').style.display = 'grid';
-                document.getElementById('startBtn').disabled = false;
-                
-                // Mettre à jour le graphique
-                updateChartWithHistoricalData();
-                
-                addLog('system', '✅ DONNÉES', `${state.historicalData.length} points • ${dataSource} • ${crypto} ${interval}`);
-                
-            } catch (error) {
-                console.error('❌ Error loading data:', error);
-                alert('❌ Erreur: ' + error.message);
-                document.getElementById('loadingStatus').style.display = 'none';
-                document.getElementById('loadBtn').disabled = false;
-            }
+        function renderAICards() {
+            const ais = [
+                { id: 'claude', icon: '🧠', name: 'Claude' },
+                { id: 'gemini', icon: '💎', name: 'Gemini' },
+                { id: 'chatgpt', icon: '🚀', name: 'ChatGPT' },
+                { id: 'grok', icon: '⚡', name: 'Grok' }
+            ];
+
+            document.getElementById('aiCards').innerHTML = ais.map(ai => `
+                <div class="ai-card rounded-xl p-5" id="card-${ai.id}">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-2">
+                            <span class="text-3xl">${ai.icon}</span>
+                            <h3 class="text-xl font-bold">${ai.name}</h3>
+                        </div>
+                        <input type="checkbox" id="ai-${ai.id}" onclick="toggleAI('${ai.id}')" class="w-5 h-5 cursor-pointer">
+                    </div>
+                    <div class="space-y-2 text-xs">
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Trades:</span>
+                            <span id="${ai.id}-trades" class="font-bold text-green-400">0</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Profit:</span>
+                            <span id="${ai.id}-profit" class="font-bold text-green-400">$0</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Win Rate:</span>
+                            <span id="${ai.id}-winrate" class="font-bold">0%</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
         }
 
-        function updateChartWithHistoricalData() {
-            if (!priceChart || state.historicalData.length === 0) return;
-            
-            // Limiter à 200 points pour la lisibilité
-            const step = Math.max(1, Math.floor(state.historicalData.length / 200));
-            const filteredData = state.historicalData.filter((_, i) => i % step === 0);
-            
-            priceChart.data.labels = filteredData.map(d => new Date(d.timestamp).toLocaleString('fr-FR', { 
-                month: 'short', 
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            }));
-            priceChart.data.datasets[0].data = filteredData.map(d => d.close);
-            priceChart.update();
-        }
-
-        // ============= AI SELECTION =============
         function toggleAI(aiName) {
             state.activeAIs[aiName] = !state.activeAIs[aiName];
-            
             const card = document.getElementById(`card-${aiName}`);
             const checkbox = document.getElementById(`ai-${aiName}`);
             
@@ -603,7 +351,92 @@
             }
         }
 
-        // ============= BACKTESTING =============
+        // COINGECKO API - VRAIES DONNÉES
+        async function loadRealData() {
+            const crypto = document.getElementById('cryptoSelect').value;
+            const days = parseInt(document.getElementById('periodSelect').value);
+            
+            state.selectedCrypto = crypto;
+            state.selectedPeriod = days;
+            state.initialCapital = parseFloat(document.getElementById('initialCapital').value);
+            state.slippage = parseFloat(document.getElementById('slippageInput').value);
+            
+            document.getElementById('loadingStatus').style.display = 'block';
+            document.getElementById('dataStatus').style.display = 'none';
+            document.getElementById('loadBtn').disabled = true;
+            
+            try {
+                // CoinGecko API - Prix historiques RÉELS
+                const url = `https://api.coingecko.com/api/v3/coins/${crypto}/market_chart?vs_currency=usd&days=${days}&interval=hourly`;
+                
+                addLog('system', '📥 API', `Connexion CoinGecko pour ${crypto.toUpperCase()}...`);
+                console.log('Fetching:', url);
+                
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                // Format: prices = [[timestamp, price], ...]
+                state.historicalData = data.prices.map(([timestamp, price]) => ({
+                    timestamp: timestamp,
+                    time: new Date(timestamp).toLocaleString('fr-FR'),
+                    close: price,
+                    open: price,
+                    high: price,
+                    low: price
+                }));
+                
+                const prices = state.historicalData.map(d => d.close);
+                const minPrice = Math.min(...prices);
+                const maxPrice = Math.max(...prices);
+                
+                const startDate = new Date(state.historicalData[0].timestamp).toLocaleDateString('fr-FR');
+                const endDate = new Date(state.historicalData[state.historicalData.length - 1].timestamp).toLocaleDateString('fr-FR');
+                
+                document.getElementById('dataPoints').textContent = state.historicalData.length;
+                document.getElementById('dataPeriod').textContent = `${startDate} - ${endDate}`;
+                document.getElementById('dataMin').textContent = '$' + minPrice.toFixed(2);
+                document.getElementById('dataMax').textContent = '$' + maxPrice.toFixed(2);
+                
+                document.getElementById('loadingStatus').style.display = 'none';
+                document.getElementById('dataStatus').style.display = 'grid';
+                document.getElementById('startBtn').disabled = false;
+                
+                updateChart();
+                
+                addLog('system', '✅ DONNÉES RÉELLES', `${state.historicalData.length} prix de ${crypto.toUpperCase()} chargés depuis CoinGecko`);
+                console.log('✅ Loaded', state.historicalData.length, 'real prices');
+                
+            } catch (error) {
+                console.error('❌ Error:', error);
+                addLog('system', '❌ ERREUR', error.message);
+                alert('❌ Erreur de chargement: ' + error.message);
+                
+                document.getElementById('loadingStatus').style.display = 'none';
+                document.getElementById('loadBtn').disabled = false;
+            }
+        }
+
+        function updateChart() {
+            if (!priceChart || !state.historicalData.length) return;
+            
+            const step = Math.max(1, Math.floor(state.historicalData.length / 200));
+            const filtered = state.historicalData.filter((_, i) => i % step === 0);
+            
+            priceChart.data.labels = filtered.map(d => new Date(d.timestamp).toLocaleDateString('fr-FR', {
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit'
+            }));
+            priceChart.data.datasets[0].data = filtered.map(d => d.close);
+            priceChart.update();
+        }
+
+        // BACKTEST
         async function startBacktest() {
             const activeCount = Object.values(state.activeAIs).filter(v => v).length;
             
@@ -612,118 +445,91 @@
                 return;
             }
             
-            if (state.historicalData.length === 0) {
-                alert('❌ Chargez d\'abord les données historiques');
+            if (!state.historicalData.length) {
+                alert('❌ Chargez d\'abord les données');
                 return;
             }
             
-            // Reset stats
+            // Reset
             for (const ai in state.aiStats) {
                 state.aiStats[ai] = { 
-                    trades: 0, 
-                    profit: 0, 
-                    wins: 0, 
-                    losses: 0, 
-                    capital: state.initialCapital,
-                    trades_detail: []
+                    trades: 0, profit: 0, wins: 0, losses: 0, 
+                    capital: state.initialCapital, trades_detail: []
                 };
             }
             state.positions = { claude: null, gemini: null, chatgpt: null, grok: null };
             state.tradeLogs = [];
-            state.currentIndex = 0;
             
             document.getElementById('progressSection').style.display = 'block';
             document.getElementById('startBtn').disabled = true;
             document.getElementById('loadBtn').disabled = true;
             
-            addLog('system', '🔬 BACKTEST', `Début - ${activeCount} IA actives`);
+            addLog('system', '🔬 START', `Backtest ${activeCount} IA • ${state.historicalData.length} prix réels`);
             
-            state.backtestRunning = true;
-            
-            // Exécuter le backtest
             await runBacktest();
-            
-            state.backtestRunning = false;
             
             document.getElementById('startBtn').disabled = false;
             document.getElementById('loadBtn').disabled = false;
             
-            addLog('system', '✅ TERMINÉ', 'Backtest complété');
-            
-            // Afficher les résultats
             updateLeaderboard();
             displayDetailedStats();
+            addLog('system', '✅ TERMINÉ', 'Backtest complété');
         }
 
         async function runBacktest() {
-            const totalPoints = state.historicalData.length;
-            const minPeriod = 50; // Minimum de données pour calculer les indicateurs
+            const total = state.historicalData.length;
+            const minPeriod = 50;
             
-            for (let i = minPeriod; i < totalPoints; i++) {
+            for (let i = minPeriod; i < total; i++) {
                 state.currentIndex = i;
                 
-                // Obtenir les données jusqu'à ce point
-                const historicalSlice = state.historicalData.slice(0, i + 1);
-                const currentData = state.historicalData[i];
+                const slice = state.historicalData.slice(0, i + 1);
+                const current = state.historicalData[i];
                 
-                // Mettre à jour la progression
-                const progress = ((i - minPeriod) / (totalPoints - minPeriod)) * 100;
+                const progress = ((i - minPeriod) / (total - minPeriod)) * 100;
                 document.getElementById('progressBar').style.width = progress.toFixed(1) + '%';
                 document.getElementById('progressPercent').textContent = progress.toFixed(1) + '%';
-                document.getElementById('currentPoint').textContent = `${i + 1} / ${totalPoints}`;
-                document.getElementById('currentTime').textContent = currentData.time;
-                document.getElementById('currentPrice').textContent = '$' + currentData.close.toFixed(2);
+                document.getElementById('currentPoint').textContent = `${i + 1} / ${total}`;
+                document.getElementById('currentTime').textContent = new Date(current.timestamp).toLocaleString('fr-FR');
+                document.getElementById('currentPrice').textContent = '$' + current.close.toFixed(2);
                 
                 let totalTrades = 0;
-                for (const ai in state.aiStats) {
-                    totalTrades += state.aiStats[ai].trades;
-                }
+                for (const ai in state.aiStats) totalTrades += state.aiStats[ai].trades;
                 document.getElementById('totalTrades').textContent = totalTrades;
                 
-                // Analyser et trader pour chaque IA active
                 for (const [aiName, isActive] of Object.entries(state.activeAIs)) {
                     if (!isActive) continue;
-                    
-                    analyzeAndTrade(aiName, historicalSlice, currentData);
+                    analyzeAndTrade(aiName, slice, current);
                 }
                 
-                // Petite pause pour voir la progression (enlever en production)
-                if (i % 10 === 0) {
-                    await new Promise(resolve => setTimeout(resolve, 1));
-                }
+                if (i % 10 === 0) await new Promise(r => setTimeout(r, 1));
             }
             
-            // Clôturer les positions ouvertes à la fin
+            // Close final positions
             for (const [aiName, isActive] of Object.entries(state.activeAIs)) {
                 if (!isActive) continue;
-                
                 if (state.positions[aiName]) {
-                    const lastData = state.historicalData[state.historicalData.length - 1];
-                    closeFinalPosition(aiName, lastData);
+                    executeSell(aiName, state.historicalData[total - 1]);
                 }
             }
         }
 
-        function analyzeAndTrade(aiName, historicalSlice, currentData) {
-            const prices = historicalSlice.map(d => d.close);
-            const currentPrice = currentData.close;
+        function analyzeAndTrade(aiName, slice, current) {
+            const prices = slice.map(d => d.close);
+            const price = current.close;
             
-            // Vérifier s'il faut acheter
-            if (!state.positions[aiName] && shouldBuy(aiName, prices, currentPrice)) {
-                executeBuy(aiName, currentData);
-            }
-            // Vérifier s'il faut vendre
-            else if (state.positions[aiName] && shouldSell(aiName, state.positions[aiName], currentData)) {
-                executeSell(aiName, currentData);
+            if (!state.positions[aiName] && shouldBuy(aiName, prices, price)) {
+                executeBuy(aiName, current);
+            } else if (state.positions[aiName] && shouldSell(aiName, state.positions[aiName], current)) {
+                executeSell(aiName, current);
             }
         }
 
-        // ============= INDICATEURS TECHNIQUES =============
+        // INDICATORS
         function calculateRSI(prices, period = 14) {
             if (prices.length < period + 1) return 50;
             
             let gains = 0, losses = 0;
-            
             for (let i = prices.length - period; i < prices.length; i++) {
                 const change = prices[i] - prices[i - 1];
                 if (change > 0) gains += change;
@@ -732,21 +538,18 @@
             
             const avgGain = gains / period;
             const avgLoss = losses / period;
-            
             if (avgLoss === 0) return 100;
+            
             return 100 - (100 / (1 + (avgGain / avgLoss)));
         }
 
         function calculateEMA(prices, period) {
             if (prices.length < period) return prices[prices.length - 1];
-            
             const k = 2 / (period + 1);
             let ema = prices[0];
-            
             for (let i = 1; i < prices.length; i++) {
                 ema = prices[i] * k + ema * (1 - k);
             }
-            
             return ema;
         }
 
@@ -755,8 +558,8 @@
             return (prices[prices.length - 1] - prices[prices.length - period]) / prices[prices.length - period];
         }
 
-        // ============= STRATÉGIES D'ACHAT =============
-        function shouldBuy(aiName, prices, currentPrice) {
+        // STRATEGIES
+        function shouldBuy(aiName, prices, price) {
             if (prices.length < 50) return false;
             
             const rsi = calculateRSI(prices);
@@ -765,128 +568,83 @@
             const momentum = calculateMomentum(prices);
             
             switch(aiName) {
-                case 'claude':
-                    // Conservateur: RSI très bas + EMA bullish
-                    return rsi < 30 && ema20 > ema50 && currentPrice > ema20;
-                    
-                case 'gemini':
-                    // Équilibré: RSI moyen + momentum positif
-                    return rsi < 35 && momentum > 0.01 && currentPrice > ema20;
-                    
-                case 'chatgpt':
-                    // Momentum: EMA cross + momentum fort
-                    return ema20 > ema50 && momentum > 0.015 && rsi < 70;
-                    
-                case 'grok':
-                    // Agressif: momentum très fort
-                    return momentum > 0.02 && rsi < 60;
-                    
-                default:
-                    return false;
+                case 'claude': return rsi < 30 && ema20 > ema50 && price > ema20;
+                case 'gemini': return rsi < 35 && momentum > 0.01 && price > ema20;
+                case 'chatgpt': return ema20 > ema50 && momentum > 0.015 && rsi < 70;
+                case 'grok': return momentum > 0.02 && rsi < 60;
+                default: return false;
             }
         }
 
-        function shouldSell(aiName, position, currentData) {
+        function shouldSell(aiName, position, current) {
             if (!position) return false;
             
-            const currentPrice = currentData.close;
-            const profitPercent = ((currentPrice - position.entryPrice) / position.entryPrice) * 100;
+            const profitPercent = ((current.close - position.entryPrice) / position.entryPrice) * 100;
             
             const strategies = {
-                claude: { takeProfit: 2, stopLoss: -1 },
-                gemini: { takeProfit: 3, stopLoss: -1.5 },
-                chatgpt: { takeProfit: 4, stopLoss: -2 },
-                grok: { takeProfit: 5, stopLoss: -2.5 }
+                claude: { tp: 2, sl: -1 },
+                gemini: { tp: 3, sl: -1.5 },
+                chatgpt: { tp: 4, sl: -2 },
+                grok: { tp: 5, sl: -2.5 }
             };
             
-            const strategy = strategies[aiName];
-            
-            return profitPercent >= strategy.takeProfit || profitPercent <= strategy.stopLoss;
+            const s = strategies[aiName];
+            return profitPercent >= s.tp || profitPercent <= s.sl;
         }
 
-        // ============= EXÉCUTION DES TRADES =============
-        function executeBuy(aiName, currentData) {
+        // EXECUTION
+        function executeBuy(aiName, current) {
             const stats = state.aiStats[aiName];
-            
-            // Montant du trade (30% du capital)
             const tradeAmount = stats.capital * 0.3;
             
-            if (tradeAmount < 10) {
-                return; // Montant trop faible
-            }
+            if (tradeAmount < 10) return;
             
-            // Appliquer slippage et frais
             const slippageCost = tradeAmount * (state.slippage / 100);
-            const fees = tradeAmount * (state.fees / 100);
+            const fees = tradeAmount * 0.1 / 100;
             const totalCost = tradeAmount + slippageCost + fees;
             
-            if (totalCost > stats.capital) {
-                return; // Pas assez de capital
-            }
+            if (totalCost > stats.capital) return;
             
-            const tokensAmount = tradeAmount / currentData.close;
+            const tokensAmount = tradeAmount / current.close;
             
             state.positions[aiName] = {
-                entryPrice: currentData.close,
+                entryPrice: current.close,
                 amount: tradeAmount,
                 tokensAmount: tokensAmount,
-                entryTime: currentData.timestamp,
-                entryTimeStr: currentData.time
+                entryTime: current.timestamp
             };
             
             stats.capital -= totalCost;
             stats.trades++;
             
-            addLog(aiName, '🟢 BUY', `${tokensAmount.toFixed(6)} @ $${currentData.close.toFixed(2)} • ${currentData.time}`);
+            addLog(aiName, '🟢 BUY', `${tokensAmount.toFixed(6)} @ $${current.close.toFixed(2)}`);
         }
 
-        function executeSell(aiName, currentData) {
+        function executeSell(aiName, current) {
             const position = state.positions[aiName];
             if (!position) return;
             
             const stats = state.aiStats[aiName];
-            const sellValue = position.tokensAmount * currentData.close;
-            
-            // Appliquer slippage et frais
+            const sellValue = position.tokensAmount * current.close;
             const slippageCost = sellValue * (state.slippage / 100);
-            const fees = sellValue * (state.fees / 100);
+            const fees = sellValue * 0.1 / 100;
             const netValue = sellValue - slippageCost - fees;
-            
             const profit = netValue - position.amount;
             const profitPercent = (profit / position.amount) * 100;
             
             stats.capital += netValue;
             stats.profit += profit;
             
-            if (profit > 0) {
-                stats.wins++;
-            } else {
-                stats.losses++;
-            }
+            if (profit > 0) stats.wins++;
+            else stats.losses++;
             
-            stats.trades_detail.push({
-                entry: position.entryPrice,
-                exit: currentData.close,
-                profit: profit,
-                profitPercent: profitPercent,
-                entryTime: position.entryTimeStr,
-                exitTime: currentData.time
-            });
+            stats.trades_detail.push({ profit, profitPercent });
             
             addLog(aiName, profit >= 0 ? '🟢 SELL' : '🔴 SELL', 
-                `$${netValue.toFixed(2)} • Profit: ${profit >= 0 ? '+' : ''}$${profit.toFixed(2)} (${profitPercent >= 0 ? '+' : ''}${profitPercent.toFixed(2)}%) • ${currentData.time}`);
+                `$${netValue.toFixed(2)} • ${profit >= 0 ? '+' : ''}$${profit.toFixed(2)} (${profitPercent >= 0 ? '+' : ''}${profitPercent.toFixed(2)}%)`);
             
             state.positions[aiName] = null;
-            
             updateAIStats(aiName);
-        }
-
-        function closeFinalPosition(aiName, lastData) {
-            const position = state.positions[aiName];
-            if (!position) return;
-            
-            addLog(aiName, '⏹️ CLOSE', 'Clôture position finale');
-            executeSell(aiName, lastData);
         }
 
         function updateAIStats(aiName) {
@@ -899,8 +657,8 @@
                 (totalProfit >= 0 ? '+$' : '-$') + Math.abs(totalProfit).toFixed(2);
             document.getElementById(`${aiName}-winrate`).textContent = winRate + '%';
             
-            const profitEl = document.getElementById(`${aiName}-profit`);
-            profitEl.className = totalProfit >= 0 ? 'font-bold text-green-400' : 'font-bold text-red-400';
+            const el = document.getElementById(`${aiName}-profit`);
+            el.className = totalProfit >= 0 ? 'font-bold text-green-400' : 'font-bold text-red-400';
         }
 
         function updateLeaderboard() {
@@ -916,9 +674,9 @@
             
             const icons = { claude: '🧠', gemini: '💎', chatgpt: '🚀', grok: '⚡' };
             
-            const html = sorted.map((item, index) => {
-                const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '🔹';
-                const winRate = item.stats.trades > 0 ? ((item.stats.wins / item.stats.trades) * 100).toFixed(1) : 0;
+            const html = sorted.map((item, i) => {
+                const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '🔹';
+                const wr = item.stats.trades > 0 ? ((item.stats.wins / item.stats.trades) * 100).toFixed(1) : 0;
                 
                 return `
                     <div class="bg-gray-800 bg-opacity-50 border border-gray-600 rounded-lg p-4">
@@ -935,37 +693,31 @@
                         <div class="grid grid-cols-3 gap-2 text-xs text-gray-400 mb-2">
                             <div>Trades: <span class="text-white font-bold">${item.stats.trades}</span></div>
                             <div>Wins: <span class="text-green-400 font-bold">${item.stats.wins}</span></div>
-                            <div>WR: <span class="font-bold">${winRate}%</span></div>
+                            <div>WR: <span class="font-bold">${wr}%</span></div>
                         </div>
                         <div class="text-xs">
                             <span class="text-gray-400">ROI: </span>
                             <span class="font-bold ${item.roi >= 0 ? 'text-green-400' : 'text-red-400'}">
                                 ${item.roi >= 0 ? '+' : ''}${item.roi.toFixed(2)}%
                             </span>
-                            <span class="text-gray-400 ml-3">Capital final: </span>
-                            <span class="font-bold text-white">${item.stats.capital.toFixed(2)} USDT</span>
                         </div>
                     </div>
                 `;
             }).join('');
             
-            document.getElementById('leaderboard').innerHTML = html || '<div class="text-center text-gray-500 py-8">No active AI</div>';
+            document.getElementById('leaderboard').innerHTML = html || '<div class="text-center text-gray-500 py-8">Pas d\'IA active</div>';
         }
 
         function displayDetailedStats() {
-            const activeAIs = Object.entries(state.aiStats)
-                .filter(([name]) => state.activeAIs[name]);
+            const activeAIs = Object.entries(state.aiStats).filter(([name]) => state.activeAIs[name]);
+            const icons = { claude: '🧠', gemini: '💎', chatgpt: '🚀', grok: '⚡' };
             
             const html = activeAIs.map(([name, stats]) => {
                 const totalProfit = stats.capital - state.initialCapital;
                 const roi = ((stats.capital - state.initialCapital) / state.initialCapital) * 100;
-                const winRate = stats.trades > 0 ? ((stats.wins / stats.trades) * 100).toFixed(1) : 0;
-                const avgWin = stats.wins > 0 ? (stats.trades_detail.filter(t => t.profit > 0).reduce((sum, t) => sum + t.profit, 0) / stats.wins) : 0;
-                const avgLoss = stats.losses > 0 ? (stats.trades_detail.filter(t => t.profit < 0).reduce((sum, t) => sum + t.profit, 0) / stats.losses) : 0;
-                const maxWin = stats.trades_detail.length > 0 ? Math.max(...stats.trades_detail.map(t => t.profit)) : 0;
-                const maxLoss = stats.trades_detail.length > 0 ? Math.min(...stats.trades_detail.map(t => t.profit)) : 0;
-                
-                const icons = { claude: '🧠', gemini: '💎', chatgpt: '🚀', grok: '⚡' };
+                const wr = stats.trades > 0 ? ((stats.wins / stats.trades) * 100).toFixed(1) : 0;
+                const avgWin = stats.wins > 0 ? (stats.trades_detail.filter(t => t.profit > 0).reduce((s, t) => s + t.profit, 0) / stats.wins) : 0;
+                const avgLoss = stats.losses > 0 ? (stats.trades_detail.filter(t => t.profit < 0).reduce((s, t) => s + t.profit, 0) / stats.losses) : 0;
                 
                 return `
                     <div class="bg-gray-800 bg-opacity-50 border border-gray-600 rounded-lg p-4">
@@ -979,12 +731,12 @@
                                 <span class="font-bold ${roi >= 0 ? 'text-green-400' : 'text-red-400'}">${roi >= 0 ? '+' : ''}${roi.toFixed(2)}%</span>
                             </div>
                             <div class="flex justify-between">
-                                <span class="text-gray-400">Profit total:</span>
+                                <span class="text-gray-400">Profit:</span>
                                 <span class="font-bold ${totalProfit >= 0 ? 'text-green-400' : 'text-red-400'}">${totalProfit >= 0 ? '+' : ''}$${totalProfit.toFixed(2)}</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-gray-400">Win rate:</span>
-                                <span class="font-bold text-white">${winRate}%</span>
+                                <span class="font-bold text-white">${wr}%</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-gray-400">Avg win:</span>
@@ -992,19 +744,11 @@
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-gray-400">Avg loss:</span>
-                                <span class="font-bold text-red-400">${avgLoss.toFixed(2)}</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-400">Best trade:</span>
-                                <span class="font-bold text-green-400">+$${maxWin.toFixed(2)}</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-400">Worst trade:</span>
-                                <span class="font-bold text-red-400">${maxLoss.toFixed(2)}</span>
+                                <span class="font-bold text-red-400">$${avgLoss.toFixed(2)}</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-gray-400">Capital final:</span>
-                                <span class="font-bold text-white">${stats.capital.toFixed(2)} USDT</span>
+                                <span class="font-bold text-white">${stats.capital.toFixed(2)} USD</span>
                             </div>
                         </div>
                     </div>
@@ -1012,34 +756,23 @@
             }).join('');
             
             document.getElementById('detailedStats').innerHTML = html || 
-                '<div class="col-span-4 text-center text-gray-500 py-8">Aucune statistique disponible</div>';
+                '<div class="col-span-4 text-center text-gray-500 py-8">Pas de stats</div>';
         }
 
         function addLog(source, action, details) {
-            const timestamp = new Date(state.historicalData[state.currentIndex]?.timestamp || Date.now()).toLocaleTimeString();
-            
+            const timestamp = new Date().toLocaleTimeString();
             state.tradeLogs.unshift({ timestamp, source, action, details });
             if (state.tradeLogs.length > 200) state.tradeLogs.pop();
-            
-            // Render logs only every 10 trades to improve performance
-            if (state.tradeLogs.length % 10 === 0 || action.includes('DONNÉES') || action.includes('TERMINÉ')) {
+            if (state.tradeLogs.length % 5 === 0 || action.includes('✅') || action.includes('❌')) {
                 renderLogs();
             }
         }
 
         function renderLogs() {
-            const icons = { 
-                claude: '🧠', 
-                gemini: '💎', 
-                chatgpt: '🚀',
-                grok: '⚡',
-                system: '⚙️'
-            };
+            const icons = { claude: '🧠', gemini: '💎', chatgpt: '🚀', grok: '⚡', system: '⚙️' };
+            const display = state.tradeLogs.slice(0, 50);
             
-            // Limiter à 50 logs affichés pour la performance
-            const displayLogs = state.tradeLogs.slice(0, 50);
-            
-            const html = displayLogs.map(log => `
+            const html = display.map(log => `
                 <div class="bg-gray-800 bg-opacity-50 border border-gray-700 rounded-lg p-3">
                     <div class="flex items-start gap-3">
                         <span class="text-2xl">${icons[log.source] || '📊'}</span>
@@ -1056,17 +789,17 @@
             `).join('');
             
             document.getElementById('tradeLogs').innerHTML = html || 
-                '<div class="text-center text-gray-500 py-8">En attente de backtest...</div>';
+                '<div class="text-center text-gray-500 py-8">Chargez des données...</div>';
         }
 
         function clearLogs() {
-            if (confirm('Effacer tous les logs ?')) {
+            if (confirm('Effacer les logs ?')) {
                 state.tradeLogs = [];
                 renderLogs();
             }
         }
 
-        console.log('🔬 BACKTESTING BOT READY');
+        console.log('🔬 Ready - CoinGecko Real Data Backtesting');
     </script>
 </body>
 </html>
