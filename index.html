@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🤖 Trading Bot PRO - Analyse 1 An</title>
+    <title>🤖 Trading Bot CUSTOM - Indicateurs Personnalisables</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
@@ -18,19 +18,25 @@
             border-radius: 20px;
             backdrop-filter: blur(10px);
         }
-        .indicator-active {
+        .indicator-chip {
+            background: rgba(59, 130, 246, 0.2);
+            border: 2px solid #3b82f6;
+            transition: all 0.3s;
+        }
+        .indicator-chip.selected {
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-color: #10b981;
             box-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
+        }
+        .indicator-chip:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
         }
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
         }
         .pulse { animation: pulse 2s ease-in-out infinite; }
-        .metric-card {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(37, 99, 235, 0.1) 100%);
-            border: 1px solid rgba(59, 130, 246, 0.3);
-        }
         .trade-log {
             max-height: 400px;
             overflow-y: auto;
@@ -43,20 +49,14 @@
         <!-- Header -->
         <div class="text-center mb-8">
             <h1 class="text-5xl font-bold bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent mb-3">
-                🤖 TRADING BOT PROFESSIONNEL
+                🤖 TRADING BOT PERSONNALISABLE
             </h1>
-            <p class="text-gray-300 text-lg">Analyse technique complète sur 1 an de données RÉELLES</p>
-            <div class="mt-3 flex justify-center gap-3 flex-wrap">
-                <span class="px-4 py-2 bg-blue-900 bg-opacity-50 text-blue-300 rounded-full text-sm border border-blue-500">📊 12+ Indicateurs</span>
-                <span class="px-4 py-2 bg-green-900 bg-opacity-50 text-green-300 rounded-full text-sm border border-green-500">✅ Données Réelles</span>
-                <span class="px-4 py-2 bg-purple-900 bg-opacity-50 text-purple-300 rounded-full text-sm border border-purple-500">📈 1 An d'historique</span>
-                <span class="px-4 py-2 bg-yellow-900 bg-opacity-50 text-yellow-300 rounded-full text-sm border border-yellow-500">🧠 ML Ready</span>
-            </div>
+            <p class="text-gray-300 text-lg">Choisissez VOS indicateurs pour BUY et SELL • Test sur 1 an de données RÉELLES</p>
         </div>
 
         <!-- Configuration -->
         <div class="card p-6 mb-6">
-            <h2 class="text-2xl font-bold mb-4">⚙️ Configuration du Bot</h2>
+            <h2 class="text-2xl font-bold mb-4">⚙️ Configuration</h2>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                 <div>
@@ -67,183 +67,78 @@
                         <option value="BNBUSDT">Binance Coin (BNB/USDT)</option>
                         <option value="SOLUSDT">Solana (SOL/USDT)</option>
                         <option value="ADAUSDT">Cardano (ADA/USDT)</option>
-                        <option value="DOTUSDT">Polkadot (DOT/USDT)</option>
-                        <option value="MATICUSDT">Polygon (MATIC/USDT)</option>
-                        <option value="AVAXUSDT">Avalanche (AVAX/USDT)</option>
                     </select>
                 </div>
 
                 <div>
-                    <label class="block text-sm text-gray-300 mb-2 font-semibold">Période d'analyse</label>
+                    <label class="block text-sm text-gray-300 mb-2 font-semibold">Période</label>
                     <select id="periodSelect" class="w-full bg-gray-800 border-2 border-gray-600 rounded-lg px-4 py-3 text-white">
-                        <option value="1h-500">~21 jours (1h, 500 points)</option>
-                        <option value="4h-500">~83 jours (4h, 500 points)</option>
-                        <option value="1d-365" selected>~1 an (1 jour, 365 points)</option>
-                        <option value="1d-500">~1.4 ans (1 jour, 500 points)</option>
-                        <option value="1d-730">2 ans (1 jour, 730 points)</option>
+                        <option value="1h-500">~21 jours (1h)</option>
+                        <option value="4h-500">~83 jours (4h)</option>
+                        <option value="1d-365" selected>1 an (1 jour)</option>
                     </select>
                 </div>
 
                 <div>
-                    <label class="block text-sm text-gray-300 mb-2 font-semibold">Capital initial</label>
+                    <label class="block text-sm text-gray-300 mb-2 font-semibold">Capital</label>
                     <input type="number" id="capitalInput" value="10000" min="1000" step="1000" class="w-full bg-gray-800 border-2 border-gray-600 rounded-lg px-4 py-3 text-white">
                 </div>
             </div>
 
-            <button onclick="loadAndAnalyze()" id="loadBtn" class="w-full px-6 py-4 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white rounded-lg font-bold text-lg">
-                📥 Charger & Analyser Marché (1 an)
+            <button onclick="loadData()" id="loadBtn" class="w-full px-6 py-4 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white rounded-lg font-bold text-lg">
+                📥 Charger Données du Marché
             </button>
 
             <div id="loadingStatus" class="text-center py-4 mt-4" style="display: none;">
-                <div class="pulse text-blue-400 font-bold text-lg">⏳ Chargement et analyse du marché...</div>
-                <p class="text-gray-400 text-sm mt-2">Téléchargement de 365+ chandeliers depuis Binance</p>
+                <div class="pulse text-blue-400 font-bold text-lg">⏳ Chargement...</div>
             </div>
         </div>
 
-        <!-- Market Analysis -->
-        <div id="marketAnalysis" class="card p-6 mb-6" style="display: none;">
-            <h2 class="text-2xl font-bold mb-4">📊 Analyse Technique du Marché</h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                <div class="metric-card rounded-lg p-4">
-                    <p class="text-xs text-gray-400 mb-1">Période analysée</p>
-                    <p class="text-2xl font-bold text-blue-400" id="analyzedPeriod">-</p>
-                </div>
-                <div class="metric-card rounded-lg p-4">
-                    <p class="text-xs text-gray-400 mb-1">Chandeliers</p>
-                    <p class="text-2xl font-bold text-green-400" id="candleCount">0</p>
-                </div>
-                <div class="metric-card rounded-lg p-4">
-                    <p class="text-xs text-gray-400 mb-1">Variation totale</p>
-                    <p class="text-2xl font-bold" id="totalChange">0%</p>
-                </div>
-                <div class="metric-card rounded-lg p-4">
-                    <p class="text-xs text-gray-400 mb-1">Volatilité moyenne</p>
-                    <p class="text-2xl font-bold text-yellow-400" id="avgVolatility">0%</p>
-                </div>
-            </div>
-
-            <div class="bg-gradient-to-r from-purple-900 to-pink-900 bg-opacity-30 border-2 border-purple-500 rounded-lg p-4 mb-4">
-                <p class="text-purple-200 font-bold mb-3">📈 INDICATEURS TECHNIQUES UTILISÉS</p>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-                    <div class="flex items-center gap-2">
-                        <span class="text-green-400">✓</span>
-                        <span class="text-purple-100"><strong>RSI (14)</strong> - Surachat/Survente</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-green-400">✓</span>
-                        <span class="text-purple-100"><strong>MACD</strong> - Momentum & Tendance</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-green-400">✓</span>
-                        <span class="text-purple-100"><strong>EMA 20/50/200</strong> - Tendances</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-green-400">✓</span>
-                        <span class="text-purple-100"><strong>Bollinger Bands</strong> - Volatilité</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-green-400">✓</span>
-                        <span class="text-purple-100"><strong>Stochastic RSI</strong> - Confirmation</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-green-400">✓</span>
-                        <span class="text-purple-100"><strong>ADX</strong> - Force de tendance</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-green-400">✓</span>
-                        <span class="text-purple-100"><strong>Volume Profile</strong> - Liquidité</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-green-400">✓</span>
-                        <span class="text-purple-100"><strong>ATR</strong> - True Range</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-green-400">✓</span>
-                        <span class="text-purple-100"><strong>OBV</strong> - Volume Balance</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-green-400">✓</span>
-                        <span class="text-purple-100"><strong>Williams %R</strong> - Momentum</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-green-400">✓</span>
-                        <span class="text-purple-100"><strong>CCI</strong> - Commodity Channel</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-green-400">✓</span>
-                        <span class="text-purple-100"><strong>Ichimoku Cloud</strong> - Support/Résistance</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="bg-blue-900 bg-opacity-30 border border-blue-500 rounded-lg p-4">
-                    <p class="text-blue-200 font-bold mb-2">📈 Tendance Générale</p>
-                    <p class="text-2xl font-bold" id="trendDirection">-</p>
-                    <p class="text-sm text-gray-400 mt-1" id="trendStrength">-</p>
-                </div>
-                <div class="bg-green-900 bg-opacity-30 border border-green-500 rounded-lg p-4">
-                    <p class="text-green-200 font-bold mb-2">💪 Force du Momentum</p>
-                    <p class="text-2xl font-bold" id="momentumScore">-</p>
-                    <p class="text-sm text-gray-400 mt-1" id="momentumStatus">-</p>
-                </div>
-                <div class="bg-purple-900 bg-opacity-30 border border-purple-500 rounded-lg p-4">
-                    <p class="text-purple-200 font-bold mb-2">🎯 Sentiment RSI</p>
-                    <p class="text-2xl font-bold" id="rsiSentiment">-</p>
-                    <p class="text-sm text-gray-400 mt-1" id="rsiValue">-</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Strategy -->
-        <div id="strategySection" class="card p-6 mb-6" style="display: none;">
-            <h2 class="text-2xl font-bold mb-4">🎯 Stratégie de Trading</h2>
-            
-            <div class="bg-gradient-to-r from-green-900 to-teal-900 bg-opacity-30 border-2 border-green-500 rounded-lg p-6">
-                <p class="text-green-200 font-bold mb-4 text-lg">✅ STRATÉGIE MULTI-INDICATEURS OPTIMISÉE</p>
+        <!-- Indicator Selection -->
+        <div id="indicatorSelection" class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6" style="display: none;">
+            <!-- BUY Indicators -->
+            <div class="card p-6">
+                <h2 class="text-2xl font-bold mb-4 text-green-400">🟢 INDICATEURS D'ACHAT</h2>
+                <p class="text-sm text-gray-400 mb-4">Sélectionnez les conditions pour déclencher un ACHAT (toutes doivent être vraies)</p>
                 
-                <div class="space-y-4">
-                    <div>
-                        <p class="text-green-100 font-semibold mb-2">🟢 SIGNAL D'ACHAT (Tous les critères requis):</p>
-                        <ul class="text-sm text-green-200 space-y-1 ml-4">
-                            <li>• <strong>RSI < 35</strong> → Survente confirmée</li>
-                            <li>• <strong>MACD bullish cross</strong> → Signal ligne > MACD</li>
-                            <li>• <strong>Prix > EMA 50</strong> → Tendance haussière moyen terme</li>
-                            <li>• <strong>EMA 20 > EMA 50</strong> → Momentum positif</li>
-                            <li>• <strong>Stoch RSI < 20</strong> → Sur-survendu</li>
-                            <li>• <strong>Bollinger: Prix proche lower band</strong> → Potentiel rebond</li>
-                            <li>• <strong>ADX > 20</strong> → Tendance confirmée</li>
-                            <li>• <strong>Volume > moyenne</strong> → Liquidité suffisante</li>
-                        </ul>
-                    </div>
-                    
-                    <div>
-                        <p class="text-red-100 font-semibold mb-2">🔴 SIGNAL DE VENTE (Un seul critère suffit):</p>
-                        <ul class="text-sm text-red-200 space-y-1 ml-4">
-                            <li>• <strong>Take Profit: +3%</strong> → Sécuriser gains</li>
-                            <li>• <strong>Stop Loss: -2%</strong> → Limiter pertes</li>
-                            <li>• <strong>RSI > 70</strong> → Surachat</li>
-                            <li>• <strong>MACD bearish cross</strong> → Retournement</li>
-                            <li>• <strong>Prix < EMA 50</strong> → Perte de tendance</li>
-                            <li>• <strong>Trailing Stop: -1.5% depuis peak</strong> → Protection gains</li>
-                        </ul>
-                    </div>
-
-                    <div class="bg-yellow-900 bg-opacity-50 border border-yellow-500 rounded-lg p-4 mt-4">
-                        <p class="text-yellow-200 font-bold mb-2">⚙️ PARAMÈTRES DE GESTION</p>
-                        <ul class="text-sm text-yellow-200 space-y-1">
-                            <li>• <strong>Taille position:</strong> 30% du capital par trade</li>
-                            <li>• <strong>Max positions simultanées:</strong> 1</li>
-                            <li>• <strong>Frais:</strong> 0.1% par transaction</li>
-                            <li>• <strong>Slippage:</strong> 0.05%</li>
-                        </ul>
-                    </div>
+                <div class="space-y-3" id="buyIndicators">
+                    <!-- Filled by JS -->
                 </div>
             </div>
 
-            <button onclick="runBacktest()" id="backtestBtn" class="w-full mt-6 px-6 py-4 bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white rounded-lg font-bold text-lg">
-                🚀 Lancer Backtest sur 1 An
+            <!-- SELL Indicators -->
+            <div class="card p-6">
+                <h2 class="text-2xl font-bold mb-4 text-red-400">🔴 INDICATEURS DE VENTE</h2>
+                <p class="text-sm text-gray-400 mb-4">Sélectionnez les conditions pour déclencher une VENTE (au moins une doit être vraie)</p>
+                
+                <div class="space-y-3" id="sellIndicators">
+                    <!-- Filled by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Strategy Summary -->
+        <div id="strategySummary" class="card p-6 mb-6" style="display: none;">
+            <h2 class="text-2xl font-bold mb-4">🎯 Votre Stratégie Personnalisée</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-green-900 bg-opacity-30 border-2 border-green-500 rounded-lg p-4">
+                    <p class="text-green-200 font-bold mb-3">✅ CONDITIONS D'ACHAT (<span id="buyCount">0</span> sélectionnées)</p>
+                    <ul id="buyList" class="text-sm text-green-200 space-y-1">
+                        <li class="text-gray-400">Aucune condition sélectionnée</li>
+                    </ul>
+                </div>
+                
+                <div class="bg-red-900 bg-opacity-30 border-2 border-red-500 rounded-lg p-4">
+                    <p class="text-red-200 font-bold mb-3">❌ CONDITIONS DE VENTE (<span id="sellCount">0</span> sélectionnées)</p>
+                    <ul id="sellList" class="text-sm text-red-200 space-y-1">
+                        <li class="text-gray-400">Aucune condition sélectionnée</li>
+                    </ul>
+                </div>
+            </div>
+
+            <button onclick="runBacktest()" id="backtestBtn" class="w-full mt-6 px-6 py-4 bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white rounded-lg font-bold text-lg" disabled>
+                🚀 Lancer Backtest avec Cette Stratégie
             </button>
         </div>
 
@@ -263,7 +158,7 @@
 
             <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
                 <div class="bg-gray-800 border border-gray-600 rounded-lg p-3">
-                    <p class="text-xs text-gray-400">Jour</p>
+                    <p class="text-xs text-gray-400">Point</p>
                     <p class="font-bold text-white" id="currentDay">0 / 365</p>
                 </div>
                 <div class="bg-blue-900 bg-opacity-30 border border-blue-600 rounded-lg p-3">
@@ -284,10 +179,10 @@
         <!-- Results -->
         <div id="resultsSection" class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6" style="display: none;">
             <div class="card p-6">
-                <h2 class="text-2xl font-bold mb-4">🏆 Résultats du Backtest</h2>
+                <h2 class="text-2xl font-bold mb-4">🏆 Résultats</h2>
                 <div class="space-y-4">
                     <div class="bg-gradient-to-r from-green-600 to-teal-600 rounded-lg p-6">
-                        <p class="text-sm text-green-100 mb-1">ROI Total (1 an)</p>
+                        <p class="text-sm text-green-100 mb-1">ROI Total</p>
                         <p class="text-4xl font-bold text-white" id="finalROI">0%</p>
                     </div>
                     <div class="grid grid-cols-2 gap-4">
@@ -304,7 +199,7 @@
                             <p class="text-xl font-bold" id="totalProfit">$0</p>
                         </div>
                         <div class="bg-yellow-900 bg-opacity-50 rounded-lg p-4">
-                            <p class="text-xs text-gray-400 mb-1">Nombre trades</p>
+                            <p class="text-xs text-gray-400 mb-1">Trades</p>
                             <p class="text-xl font-bold text-yellow-400" id="numTrades">0</p>
                         </div>
                     </div>
@@ -312,7 +207,7 @@
             </div>
 
             <div class="card p-6">
-                <h2 class="text-2xl font-bold mb-4">📊 Statistiques Détaillées</h2>
+                <h2 class="text-2xl font-bold mb-4">📊 Statistiques</h2>
                 <div class="space-y-3 text-sm">
                     <div class="flex justify-between">
                         <span class="text-gray-400">Win Rate</span>
@@ -327,7 +222,7 @@
                         <span class="font-bold text-red-400" id="loseTrades">0</span>
                     </div>
                     <div class="flex justify-between">
-                        <span class="text-gray-400">Gain moyen</span>
+                        <span class="text-gray-400">Profit moyen</span>
                         <span class="font-bold text-green-400" id="avgWin">$0</span>
                     </div>
                     <div class="flex justify-between">
@@ -335,109 +230,66 @@
                         <span class="font-bold text-red-400" id="avgLoss">$0</span>
                     </div>
                     <div class="flex justify-between">
-                        <span class="text-gray-400">Plus gros gain</span>
-                        <span class="font-bold text-green-400" id="maxWin">$0</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-gray-400">Plus grosse perte</span>
-                        <span class="font-bold text-red-400" id="maxLoss">$0</span>
+                        <span class="text-gray-400">Max Drawdown</span>
+                        <span class="font-bold text-red-400" id="maxDrawdown">0%</span>
                     </div>
                     <div class="flex justify-between">
                         <span class="text-gray-400">Profit Factor</span>
                         <span class="font-bold text-yellow-400" id="profitFactor">0</span>
                     </div>
-                    <div class="flex justify-between">
-                        <span class="text-gray-400">Max Drawdown</span>
-                        <span class="font-bold text-red-400" id="maxDrawdown">0%</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-gray-400">Sharpe Ratio</span>
-                        <span class="font-bold text-blue-400" id="sharpeRatio">0</span>
-                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Best Indicators Analysis -->
-        <div id="indicatorsAnalysis" class="card p-6 mb-6" style="display: none;">
-            <h2 class="text-2xl font-bold mb-4">🎯 Analyse des Indicateurs - Performance</h2>
-            
-            <div class="bg-gradient-to-r from-yellow-900 to-orange-900 bg-opacity-30 border-2 border-yellow-500 rounded-lg p-6 mb-6">
-                <p class="text-yellow-200 font-bold mb-4 text-lg">🏆 MEILLEURS INDICATEURS DÉTECTÉS</p>
-                <div id="bestIndicators" class="space-y-3">
-                    <!-- Will be filled by JS -->
+        <!-- Charts -->
+        <div id="chartsSection" style="display: none;">
+            <!-- Price Chart -->
+            <div class="card p-6 mb-6">
+                <h2 class="text-2xl font-bold mb-4">📈 Graphique des Prix avec Points BUY/SELL</h2>
+                <div class="h-96 mb-4">
+                    <canvas id="priceChart"></canvas>
                 </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <h3 class="text-lg font-bold mb-3 text-blue-400">📈 Indicateurs les plus prédictifs</h3>
-                    <div id="predictiveIndicators" class="space-y-2">
-                        <!-- Will be filled by JS -->
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    <div class="bg-green-900 bg-opacity-30 border border-green-500 rounded-lg p-3">
+                        <p class="text-xs text-green-300">🟢 Points d'ACHAT</p>
+                        <p class="text-2xl font-bold text-green-400" id="buyPointsCount">0</p>
                     </div>
-                </div>
-                <div>
-                    <h3 class="text-lg font-bold mb-3 text-purple-400">⚠️ Indicateurs à améliorer</h3>
-                    <div id="weakIndicators" class="space-y-2">
-                        <!-- Will be filled by JS -->
+                    <div class="bg-red-900 bg-opacity-30 border border-red-500 rounded-lg p-3">
+                        <p class="text-xs text-red-300">🔴 Points de VENTE</p>
+                        <p class="text-2xl font-bold text-red-400" id="sellPointsCount">0</p>
                     </div>
-                </div>
-            </div>
-
-            <div class="mt-6 bg-blue-900 bg-opacity-30 border border-blue-500 rounded-lg p-4">
-                <p class="text-blue-200 font-bold mb-2">💡 RECOMMANDATIONS POUR OPTIMISATION</p>
-                <div id="recommendations" class="text-sm text-blue-200 space-y-1">
-                    <!-- Will be filled by JS -->
-                </div>
-            </div>
-        </div>
-
-        <!-- Price Chart with Indicators -->
-        <div id="priceChartSection" class="card p-6 mb-6" style="display: none;">
-            <h2 class="text-2xl font-bold mb-4">📊 Graphique des Prix avec Indicateurs</h2>
-            <div class="h-96 mb-4">
-                <canvas id="priceChart"></canvas>
-            </div>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <button onclick="toggleIndicator('ema')" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold" id="toggleEMA">
-                    📈 EMA 20/50
-                </button>
-                <button onclick="toggleIndicator('bb')" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-semibold" id="toggleBB">
-                    📊 Bollinger Bands
-                </button>
-                <button onclick="toggleIndicator('trades')" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-semibold" id="toggleTrades">
-                    🎯 Signaux Trade
-                </button>
-                <button onclick="resetChart()" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg text-sm font-semibold">
-                    🔄 Reset
-                </button>
-            </div>
-        </div>
-
-        <!-- RSI Chart -->
-        <div id="rsiChartSection" class="card p-6 mb-6" style="display: none;">
-            <h2 class="text-2xl font-bold mb-4">📉 RSI & MACD</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <h3 class="text-lg font-semibold mb-2 text-purple-400">RSI (14)</h3>
-                    <div class="h-64">
-                        <canvas id="rsiChart"></canvas>
-                    </div>
-                </div>
-                <div>
-                    <h3 class="text-lg font-semibold mb-2 text-blue-400">MACD</h3>
-                    <div class="h-64">
-                        <canvas id="macdChart"></canvas>
+                    <div class="bg-blue-900 bg-opacity-30 border border-blue-500 rounded-lg p-3">
+                        <p class="text-xs text-blue-300">📊 Trades Complétés</p>
+                        <p class="text-2xl font-bold text-blue-400" id="completedTrades">0</p>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Chart -->
-        <div id="chartSection" class="card p-6 mb-6" style="display: none;">
-            <h2 class="text-2xl font-bold mb-4">📈 Évolution du Capital</h2>
-            <div class="h-96">
-                <canvas id="equityChart"></canvas>
+            <!-- Equity Chart -->
+            <div class="card p-6 mb-6">
+                <h2 class="text-2xl font-bold mb-4">💰 Évolution du Capital</h2>
+                <div class="h-96">
+                    <canvas id="equityChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Indicators Charts -->
+            <div class="card p-6 mb-6">
+                <h2 class="text-2xl font-bold mb-4">📊 Indicateurs Techniques</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="text-lg font-semibold mb-2 text-purple-400">RSI (14)</h3>
+                        <div class="h-64">
+                            <canvas id="rsiChart"></canvas>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold mb-2 text-blue-400">MACD</h3>
+                        <div class="h-64">
+                            <canvas id="macdChart"></canvas>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -450,84 +302,87 @@
                 </button>
             </div>
             <div id="tradeLogs" class="trade-log space-y-2">
-                <div class="text-center text-gray-500 py-8">Chargez les données pour commencer...</div>
+                <div class="text-center text-gray-500 py-8">Chargez les données...</div>
             </div>
         </div>
     </div>
 
     <script>
+        // AVAILABLE INDICATORS
+        const INDICATORS_CONFIG = {
+            buy: [
+                { id: 'rsi_oversold', name: 'RSI < 30 (Survente)', category: 'Momentum' },
+                { id: 'rsi_35', name: 'RSI < 35', category: 'Momentum' },
+                { id: 'rsi_40', name: 'RSI < 40', category: 'Momentum' },
+                { id: 'stoch_rsi_low', name: 'Stochastic RSI < 20', category: 'Momentum' },
+                { id: 'macd_cross_up', name: 'MACD Cross Haussier', category: 'Tendance' },
+                { id: 'macd_positive', name: 'MACD > 0', category: 'Tendance' },
+                { id: 'ema_20_50_cross', name: 'EMA 20 > EMA 50', category: 'Tendance' },
+                { id: 'price_above_ema50', name: 'Prix > EMA 50', category: 'Tendance' },
+                { id: 'price_above_ema200', name: 'Prix > EMA 200', category: 'Tendance' },
+                { id: 'bb_lower', name: 'Prix proche BB Lower (-2%)', category: 'Volatilité' },
+                { id: 'bb_touch_lower', name: 'Prix touche BB Lower', category: 'Volatilité' },
+                { id: 'adx_strong', name: 'ADX > 25 (Tendance forte)', category: 'Force' },
+                { id: 'adx_moderate', name: 'ADX > 20', category: 'Force' },
+                { id: 'williams_oversold', name: 'Williams %R < -80', category: 'Momentum' },
+                { id: 'cci_oversold', name: 'CCI < -100', category: 'Momentum' },
+                { id: 'volume_high', name: 'Volume > Moyenne', category: 'Volume' },
+                { id: 'volume_surge', name: 'Volume > 150% Moyenne', category: 'Volume' },
+                { id: 'obv_rising', name: 'OBV en hausse', category: 'Volume' }
+            ],
+            sell: [
+                { id: 'take_profit_2', name: 'Take Profit +2%', category: 'Gestion' },
+                { id: 'take_profit_3', name: 'Take Profit +3%', category: 'Gestion' },
+                { id: 'take_profit_5', name: 'Take Profit +5%', category: 'Gestion' },
+                { id: 'stop_loss_1', name: 'Stop Loss -1%', category: 'Gestion' },
+                { id: 'stop_loss_2', name: 'Stop Loss -2%', category: 'Gestion' },
+                { id: 'stop_loss_3', name: 'Stop Loss -3%', category: 'Gestion' },
+                { id: 'trailing_stop', name: 'Trailing Stop -1.5%', category: 'Gestion' },
+                { id: 'rsi_overbought', name: 'RSI > 70 (Surachat)', category: 'Momentum' },
+                { id: 'rsi_75', name: 'RSI > 75', category: 'Momentum' },
+                { id: 'stoch_rsi_high', name: 'Stochastic RSI > 80', category: 'Momentum' },
+                { id: 'macd_cross_down', name: 'MACD Cross Baissier', category: 'Tendance' },
+                { id: 'macd_negative', name: 'MACD < 0', category: 'Tendance' },
+                { id: 'price_below_ema50', name: 'Prix < EMA 50', category: 'Tendance' },
+                { id: 'price_below_ema20', name: 'Prix < EMA 20', category: 'Tendance' },
+                { id: 'bb_upper', name: 'Prix touche BB Upper', category: 'Volatilité' },
+                { id: 'williams_overbought', name: 'Williams %R > -20', category: 'Momentum' },
+                { id: 'cci_overbought', name: 'CCI > 100', category: 'Momentum' },
+                { id: 'volume_low', name: 'Volume < 50% Moyenne', category: 'Volume' }
+            ]
+        };
+
         let state = {
             data: [],
             indicators: {},
             capital: 10000,
-            position: null,
+            selectedBuyIndicators: [],
+            selectedSellIndicators: [],
             trades: [],
             equity: [],
             logs: [],
-            indicatorPerformance: {},
             buySignals: [],
             sellSignals: []
         };
 
-        let equityChart = null;
-        let priceChart = null;
-        let rsiChart = null;
-        let macdChart = null;
-        let chartVisibility = {
-            ema: false,
-            bb: false,
-            trades: false
+        let charts = {
+            price: null,
+            equity: null,
+            rsi: null,
+            macd: null
         };
 
         // INIT
         window.addEventListener('DOMContentLoaded', () => {
-            console.log('🤖 TRADING BOT PRO - Ready');
-            initEquityChart();
-            initPriceChart();
-            initRSIChart();
-            initMACDChart();
+            console.log('🤖 CUSTOM TRADING BOT');
+            initCharts();
+            renderIndicatorSelectors();
         });
 
-        function initEquityChart() {
-            const ctx = document.getElementById('equityChart').getContext('2d');
-            equityChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: [],
-                    datasets: [{
-                        label: 'Capital ($)',
-                        data: [],
-                        borderColor: '#10b981',
-                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                        borderWidth: 2,
-                        tension: 0.4,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: { mode: 'index', intersect: false }
-                    },
-                    scales: {
-                        x: { 
-                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
-                            ticks: { color: 'white', maxTicksLimit: 10 }
-                        },
-                        y: {
-                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
-                            ticks: { color: 'white' }
-                        }
-                    }
-                }
-            });
-        }
-
-        function initPriceChart() {
-            const ctx = document.getElementById('priceChart').getContext('2d');
-            priceChart = new Chart(ctx, {
+        function initCharts() {
+            // Price Chart
+            const priceCtx = document.getElementById('priceChart').getContext('2d');
+            charts.price = new Chart(priceCtx, {
                 type: 'line',
                 data: {
                     labels: [],
@@ -550,22 +405,42 @@
                         tooltip: { mode: 'index', intersect: false }
                     },
                     scales: {
-                        x: { 
-                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
-                            ticks: { color: 'white', maxTicksLimit: 10 }
-                        },
-                        y: {
-                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
-                            ticks: { color: 'white' }
-                        }
+                        x: { grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: 'white', maxTicksLimit: 10 } },
+                        y: { grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: 'white' } }
                     }
                 }
             });
-        }
 
-        function initRSIChart() {
-            const ctx = document.getElementById('rsiChart').getContext('2d');
-            rsiChart = new Chart(ctx, {
+            // Equity Chart
+            const equityCtx = document.getElementById('equityChart').getContext('2d');
+            charts.equity = new Chart(equityCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Capital ($)',
+                        data: [],
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } },
+                    scales: {
+                        x: { grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: 'white', maxTicksLimit: 10 } },
+                        y: { grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: 'white' } }
+                    }
+                }
+            });
+
+            // RSI Chart
+            const rsiCtx = document.getElementById('rsiChart').getContext('2d');
+            charts.rsi = new Chart(rsiCtx, {
                 type: 'line',
                 data: {
                     labels: [],
@@ -583,59 +458,17 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: { mode: 'index', intersect: false },
-                        annotation: {
-                            annotations: {
-                                line1: {
-                                    type: 'line',
-                                    yMin: 70,
-                                    yMax: 70,
-                                    borderColor: 'rgb(239, 68, 68)',
-                                    borderWidth: 2,
-                                    borderDash: [5, 5],
-                                    label: {
-                                        content: 'Surachat',
-                                        enabled: true,
-                                        position: 'end'
-                                    }
-                                },
-                                line2: {
-                                    type: 'line',
-                                    yMin: 30,
-                                    yMax: 30,
-                                    borderColor: 'rgb(34, 197, 94)',
-                                    borderWidth: 2,
-                                    borderDash: [5, 5],
-                                    label: {
-                                        content: 'Survente',
-                                        enabled: true,
-                                        position: 'end'
-                                    }
-                                }
-                            }
-                        }
-                    },
+                    plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } },
                     scales: {
-                        x: { 
-                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
-                            ticks: { color: 'white', maxTicksLimit: 10 }
-                        },
-                        y: {
-                            min: 0,
-                            max: 100,
-                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
-                            ticks: { color: 'white' }
-                        }
+                        x: { grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: 'white', maxTicksLimit: 10 } },
+                        y: { min: 0, max: 100, grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: 'white' } }
                     }
                 }
             });
-        }
 
-        function initMACDChart() {
-            const ctx = document.getElementById('macdChart').getContext('2d');
-            macdChart = new Chart(ctx, {
+            // MACD Chart
+            const macdCtx = document.getElementById('macdChart').getContext('2d');
+            charts.macd = new Chart(macdCtx, {
                 type: 'bar',
                 data: {
                     labels: [],
@@ -643,14 +476,11 @@
                         label: 'Histogram',
                         data: [],
                         backgroundColor: 'rgba(59, 130, 246, 0.5)',
-                        borderColor: '#3b82f6',
-                        borderWidth: 1,
                         type: 'bar'
                     }, {
                         label: 'MACD',
                         data: [],
                         borderColor: '#10b981',
-                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
                         borderWidth: 2,
                         tension: 0.2,
                         type: 'line',
@@ -659,7 +489,6 @@
                         label: 'Signal',
                         data: [],
                         borderColor: '#ef4444',
-                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
                         borderWidth: 2,
                         tension: 0.2,
                         type: 'line',
@@ -669,26 +498,129 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: true, labels: { color: 'white' } },
-                        tooltip: { mode: 'index', intersect: false }
-                    },
+                    plugins: { legend: { display: true, labels: { color: 'white' } }, tooltip: { mode: 'index', intersect: false } },
                     scales: {
-                        x: { 
-                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
-                            ticks: { color: 'white', maxTicksLimit: 10 }
-                        },
-                        y: {
-                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
-                            ticks: { color: 'white' }
-                        }
+                        x: { grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: 'white', maxTicksLimit: 10 } },
+                        y: { grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: 'white' } }
                     }
                 }
             });
         }
 
-        // LOAD DATA
-        async function loadAndAnalyze() {
+        function renderIndicatorSelectors() {
+            // Group by category
+            const buyByCategory = {};
+            const sellByCategory = {};
+            
+            INDICATORS_CONFIG.buy.forEach(ind => {
+                if (!buyByCategory[ind.category]) buyByCategory[ind.category] = [];
+                buyByCategory[ind.category].push(ind);
+            });
+            
+            INDICATORS_CONFIG.sell.forEach(ind => {
+                if (!sellByCategory[ind.category]) sellByCategory[ind.category] = [];
+                sellByCategory[ind.category].push(ind);
+            });
+            
+            // Render BUY indicators
+            let buyHTML = '';
+            Object.entries(buyByCategory).forEach(([category, indicators]) => {
+                buyHTML += `
+                    <div class="mb-4">
+                        <p class="text-xs font-semibold text-gray-400 mb-2">${category}</p>
+                        <div class="grid grid-cols-1 gap-2">
+                            ${indicators.map(ind => `
+                                <div class="indicator-chip rounded-lg p-3 cursor-pointer" id="buy-${ind.id}" onclick="toggleBuyIndicator('${ind.id}')">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm font-semibold">${ind.name}</span>
+                                        <span class="text-2xl" id="check-buy-${ind.id}" style="display: none;">✓</span>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+            document.getElementById('buyIndicators').innerHTML = buyHTML;
+            
+            // Render SELL indicators
+            let sellHTML = '';
+            Object.entries(sellByCategory).forEach(([category, indicators]) => {
+                sellHTML += `
+                    <div class="mb-4">
+                        <p class="text-xs font-semibold text-gray-400 mb-2">${category}</p>
+                        <div class="grid grid-cols-1 gap-2">
+                            ${indicators.map(ind => `
+                                <div class="indicator-chip rounded-lg p-3 cursor-pointer" id="sell-${ind.id}" onclick="toggleSellIndicator('${ind.id}')">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm font-semibold">${ind.name}</span>
+                                        <span class="text-2xl" id="check-sell-${ind.id}" style="display: none;">✓</span>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+            document.getElementById('sellIndicators').innerHTML = sellHTML;
+        }
+
+        function toggleBuyIndicator(id) {
+            const index = state.selectedBuyIndicators.indexOf(id);
+            if (index > -1) {
+                state.selectedBuyIndicators.splice(index, 1);
+                document.getElementById(`buy-${id}`).classList.remove('selected');
+                document.getElementById(`check-buy-${id}`).style.display = 'none';
+            } else {
+                state.selectedBuyIndicators.push(id);
+                document.getElementById(`buy-${id}`).classList.add('selected');
+                document.getElementById(`check-buy-${id}`).style.display = 'block';
+            }
+            updateStrategySummary();
+        }
+
+        function toggleSellIndicator(id) {
+            const index = state.selectedSellIndicators.indexOf(id);
+            if (index > -1) {
+                state.selectedSellIndicators.splice(index, 1);
+                document.getElementById(`sell-${id}`).classList.remove('selected');
+                document.getElementById(`check-sell-${id}`).style.display = 'none';
+            } else {
+                state.selectedSellIndicators.push(id);
+                document.getElementById(`sell-${id}`).classList.add('selected');
+                document.getElementById(`check-sell-${id}`).style.display = 'block';
+            }
+            updateStrategySummary();
+        }
+
+        function updateStrategySummary() {
+            const buyNames = state.selectedBuyIndicators.map(id => 
+                INDICATORS_CONFIG.buy.find(i => i.id === id)?.name || id
+            );
+            const sellNames = state.selectedSellIndicators.map(id => 
+                INDICATORS_CONFIG.sell.find(i => i.id === id)?.name || id
+            );
+            
+            document.getElementById('buyCount').textContent = buyNames.length;
+            document.getElementById('sellCount').textContent = sellNames.length;
+            
+            if (buyNames.length > 0) {
+                document.getElementById('buyList').innerHTML = buyNames.map(n => `<li>• ${n}</li>`).join('');
+            } else {
+                document.getElementById('buyList').innerHTML = '<li class="text-gray-400">Aucune condition sélectionnée</li>';
+            }
+            
+            if (sellNames.length > 0) {
+                document.getElementById('sellList').innerHTML = sellNames.map(n => `<li>• ${n}</li>`).join('');
+            } else {
+                document.getElementById('sellList').innerHTML = '<li class="text-gray-400">Aucune condition sélectionnée</li>';
+            }
+            
+            // Enable backtest button if at least one buy and one sell indicator
+            document.getElementById('backtestBtn').disabled = !(buyNames.length > 0 && sellNames.length > 0);
+        }
+
+        async function loadData() {
             const symbol = document.getElementById('symbolSelect').value;
             const periodConfig = document.getElementById('periodSelect').value;
             const [interval, limit] = periodConfig.split('-');
@@ -699,46 +631,14 @@
             document.getElementById('loadBtn').disabled = true;
             
             try {
-                addLog('system', '📥 CHARGEMENT', `Récupération ${limit} chandeliers de ${symbol}...`);
+                addLog('system', '📥 CHARGEMENT', `${symbol} ${limit} chandeliers...`);
                 
-                // Binance limit is 1000 per request
-                const requestLimit = Math.min(1000, parseInt(limit));
-                let allData = [];
-                let endTime = Date.now();
-                const totalToFetch = parseInt(limit);
+                const url = `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`;
+                const response = await fetch(url);
                 
-                // Calculate how many requests we need
-                const numRequests = Math.ceil(totalToFetch / 1000);
+                if (!response.ok) throw new Error(`API Error: ${response.status}`);
                 
-                for (let i = 0; i < numRequests; i++) {
-                    const fetchLimit = Math.min(1000, totalToFetch - (i * 1000));
-                    
-                    const url = `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${fetchLimit}&endTime=${endTime}`;
-                    
-                    console.log(`Fetching batch ${i + 1}/${numRequests}...`);
-                    addLog('system', '📡 API', `Batch ${i + 1}/${numRequests} - ${fetchLimit} chandeliers`);
-                    
-                    const response = await fetch(url);
-                    
-                    if (!response.ok) throw new Error(`Binance API Error: ${response.status}`);
-                    
-                    const batchData = await response.json();
-                    
-                    if (batchData.length === 0) break;
-                    
-                    // Add to beginning of array (we're going backwards in time)
-                    allData = [...batchData, ...allData];
-                    
-                    // Update endTime to the first candle of this batch minus 1ms
-                    endTime = batchData[0][0] - 1;
-                    
-                    // Small delay to avoid rate limits
-                    if (i < numRequests - 1) {
-                        await new Promise(resolve => setTimeout(resolve, 100));
-                    }
-                }
-                
-                const binanceData = allData;
+                const binanceData = await response.json();
                 
                 state.data = binanceData.map(candle => ({
                     timestamp: candle[0],
@@ -750,48 +650,30 @@
                     volume: parseFloat(candle[5])
                 }));
                 
-                addLog('system', '✅ CHARGÉ', `${state.data.length} chandeliers récupérés`);
-                
                 if (state.data.length < 200) {
-                    throw new Error(`Pas assez de données (${state.data.length} < 200 requis)`);
+                    throw new Error(`Pas assez de données (${state.data.length} < 200)`);
                 }
                 
-                addLog('system', '🔍 ANALYSE', 'Calcul des indicateurs techniques...');
+                addLog('system', '✅ CHARGÉ', `${state.data.length} chandeliers`);
+                addLog('system', '🔍 CALCUL', 'Calcul des indicateurs...');
                 
-                // Calculate all indicators
                 calculateAllIndicators();
                 
-                // Show market analysis
-                displayMarketAnalysis();
-                
                 document.getElementById('loadingStatus').style.display = 'none';
-                document.getElementById('marketAnalysis').style.display = 'block';
-                document.getElementById('strategySection').style.display = 'block';
+                document.getElementById('indicatorSelection').style.display = 'grid';
+                document.getElementById('strategySummary').style.display = 'block';
                 
-                addLog('system', '✅ ANALYSE TERMINÉE', 'Prêt pour le backtest');
+                addLog('system', '✅ PRÊT', 'Sélectionnez vos indicateurs');
                 
             } catch (error) {
                 console.error('Error:', error);
                 addLog('system', '❌ ERREUR', error.message);
-                
-                let errorMsg = 'Erreur de chargement: ' + error.message;
-                
-                if (error.message.includes('Failed to fetch')) {
-                    errorMsg += '\n\n💡 Suggestions:\n';
-                    errorMsg += '• Vérifiez votre connexion Internet\n';
-                    errorMsg += '• Essayez une période plus courte\n';
-                    errorMsg += '• Binance peut être temporairement indisponible';
-                } else if (error.message.includes('API Error: 418')) {
-                    errorMsg = '⚠️ Binance rate limit atteint. Attendez 1 minute et réessayez.';
-                }
-                
-                alert(errorMsg);
+                alert('Erreur: ' + error.message);
                 document.getElementById('loadingStatus').style.display = 'none';
                 document.getElementById('loadBtn').disabled = false;
             }
         }
 
-        // CALCULATE ALL INDICATORS
         function calculateAllIndicators() {
             const closes = state.data.map(d => d.close);
             const highs = state.data.map(d => d.high);
@@ -807,294 +689,146 @@
                 bb: calculateBollingerBands(closes, 20, 2),
                 stochRSI: calculateStochasticRSI(closes, 14),
                 adx: calculateADX(highs, lows, closes, 14),
-                atr: calculateATR(highs, lows, closes, 14),
                 obv: calculateOBV(closes, volumes),
                 williamsR: calculateWilliamsR(highs, lows, closes, 14),
                 cci: calculateCCI(highs, lows, closes, 20)
             };
         }
 
-        // RSI
+        // Indicator calculation functions (RSI, MACD, EMA, etc.)
         function calculateRSI(prices, period = 14) {
             const rsi = new Array(prices.length).fill(50);
-            
             for (let i = period; i < prices.length; i++) {
                 let gains = 0, losses = 0;
-                
                 for (let j = i - period + 1; j <= i; j++) {
                     const change = prices[j] - prices[j - 1];
                     if (change > 0) gains += change;
                     else losses += Math.abs(change);
                 }
-                
                 const avgGain = gains / period;
                 const avgLoss = losses / period;
-                
-                if (avgLoss === 0) {
-                    rsi[i] = 100;
-                } else {
-                    const rs = avgGain / avgLoss;
-                    rsi[i] = 100 - (100 / (1 + rs));
-                }
+                if (avgLoss === 0) rsi[i] = 100;
+                else rsi[i] = 100 - (100 / (1 + (avgGain / avgLoss)));
             }
-            
             return rsi;
         }
 
-        // MACD
         function calculateMACD(prices) {
             const ema12 = calculateEMA(prices, 12);
             const ema26 = calculateEMA(prices, 26);
             const macd = ema12.map((v, i) => v - ema26[i]);
             const signal = calculateEMA(macd, 9);
             const histogram = macd.map((v, i) => v - signal[i]);
-            
             return { macd, signal, histogram };
         }
 
-        // EMA
         function calculateEMA(prices, period) {
             const ema = new Array(prices.length);
             ema[0] = prices[0];
             const k = 2 / (period + 1);
-            
             for (let i = 1; i < prices.length; i++) {
                 ema[i] = prices[i] * k + ema[i - 1] * (1 - k);
             }
-            
             return ema;
         }
 
-        // Bollinger Bands
         function calculateBollingerBands(prices, period = 20, stdDev = 2) {
             const sma = new Array(prices.length);
             const upper = new Array(prices.length);
             const lower = new Array(prices.length);
-            
             for (let i = period - 1; i < prices.length; i++) {
                 const slice = prices.slice(i - period + 1, i + 1);
                 const mean = slice.reduce((a, b) => a + b, 0) / period;
                 const variance = slice.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / period;
                 const std = Math.sqrt(variance);
-                
                 sma[i] = mean;
                 upper[i] = mean + stdDev * std;
                 lower[i] = mean - stdDev * std;
             }
-            
             return { sma, upper, lower };
         }
 
-        // Stochastic RSI
         function calculateStochasticRSI(prices, period = 14) {
             const rsi = calculateRSI(prices, period);
             const stochRSI = new Array(rsi.length);
-            
             for (let i = period; i < rsi.length; i++) {
                 const slice = rsi.slice(i - period + 1, i + 1);
                 const min = Math.min(...slice);
                 const max = Math.max(...slice);
-                
-                if (max === min) {
-                    stochRSI[i] = 50;
-                } else {
-                    stochRSI[i] = ((rsi[i] - min) / (max - min)) * 100;
-                }
+                if (max === min) stochRSI[i] = 50;
+                else stochRSI[i] = ((rsi[i] - min) / (max - min)) * 100;
             }
-            
             return stochRSI;
         }
 
-        // ADX
         function calculateADX(highs, lows, closes, period = 14) {
             const adx = new Array(closes.length).fill(25);
-            // Simplified ADX calculation
             for (let i = period; i < closes.length; i++) {
                 let plusDM = 0, minusDM = 0;
-                
                 for (let j = i - period + 1; j < i; j++) {
                     const highDiff = highs[j] - highs[j - 1];
                     const lowDiff = lows[j - 1] - lows[j];
-                    
                     if (highDiff > lowDiff && highDiff > 0) plusDM += highDiff;
                     if (lowDiff > highDiff && lowDiff > 0) minusDM += lowDiff;
                 }
-                
                 adx[i] = Math.min(100, ((plusDM + minusDM) / period) * 2);
             }
-            
             return adx;
         }
 
-        // ATR
-        function calculateATR(highs, lows, closes, period = 14) {
-            const atr = new Array(closes.length);
-            
-            for (let i = 1; i < closes.length; i++) {
-                const tr = Math.max(
-                    highs[i] - lows[i],
-                    Math.abs(highs[i] - closes[i - 1]),
-                    Math.abs(lows[i] - closes[i - 1])
-                );
-                
-                if (i < period) {
-                    atr[i] = tr;
-                } else {
-                    atr[i] = (atr[i - 1] * (period - 1) + tr) / period;
-                }
-            }
-            
-            return atr;
-        }
-
-        // OBV
         function calculateOBV(closes, volumes) {
             const obv = new Array(closes.length);
             obv[0] = volumes[0];
-            
             for (let i = 1; i < closes.length; i++) {
-                if (closes[i] > closes[i - 1]) {
-                    obv[i] = obv[i - 1] + volumes[i];
-                } else if (closes[i] < closes[i - 1]) {
-                    obv[i] = obv[i - 1] - volumes[i];
-                } else {
-                    obv[i] = obv[i - 1];
-                }
+                if (closes[i] > closes[i - 1]) obv[i] = obv[i - 1] + volumes[i];
+                else if (closes[i] < closes[i - 1]) obv[i] = obv[i - 1] - volumes[i];
+                else obv[i] = obv[i - 1];
             }
-            
             return obv;
         }
 
-        // Williams %R
         function calculateWilliamsR(highs, lows, closes, period = 14) {
             const williamsR = new Array(closes.length);
-            
             for (let i = period - 1; i < closes.length; i++) {
                 const highestHigh = Math.max(...highs.slice(i - period + 1, i + 1));
                 const lowestLow = Math.min(...lows.slice(i - period + 1, i + 1));
-                
                 williamsR[i] = ((highestHigh - closes[i]) / (highestHigh - lowestLow)) * -100;
             }
-            
             return williamsR;
         }
 
-        // CCI
         function calculateCCI(highs, lows, closes, period = 20) {
             const cci = new Array(closes.length);
             const tp = highs.map((h, i) => (h + lows[i] + closes[i]) / 3);
-            
             for (let i = period - 1; i < closes.length; i++) {
                 const slice = tp.slice(i - period + 1, i + 1);
                 const sma = slice.reduce((a, b) => a + b, 0) / period;
                 const md = slice.reduce((a, b) => a + Math.abs(b - sma), 0) / period;
-                
                 cci[i] = (tp[i] - sma) / (0.015 * md);
             }
-            
             return cci;
-        }
-
-        // MARKET ANALYSIS DISPLAY
-        function displayMarketAnalysis() {
-            const firstDate = new Date(state.data[0].timestamp).toLocaleDateString('fr-FR');
-            const lastDate = new Date(state.data[state.data.length - 1].timestamp).toLocaleDateString('fr-FR');
-            
-            document.getElementById('analyzedPeriod').textContent = `${firstDate} - ${lastDate}`;
-            document.getElementById('candleCount').textContent = state.data.length;
-            
-            const firstPrice = state.data[0].close;
-            const lastPrice = state.data[state.data.length - 1].close;
-            const totalChange = ((lastPrice - firstPrice) / firstPrice) * 100;
-            
-            const changeEl = document.getElementById('totalChange');
-            changeEl.textContent = (totalChange >= 0 ? '+' : '') + totalChange.toFixed(2) + '%';
-            changeEl.className = totalChange >= 0 ? 'text-2xl font-bold text-green-400' : 'text-2xl font-bold text-red-400';
-            
-            // Average volatility
-            let totalVolatility = 0;
-            for (let i = 1; i < state.data.length; i++) {
-                const dailyChange = Math.abs((state.data[i].close - state.data[i - 1].close) / state.data[i - 1].close);
-                totalVolatility += dailyChange;
-            }
-            const avgVolatility = (totalVolatility / (state.data.length - 1)) * 100;
-            document.getElementById('avgVolatility').textContent = avgVolatility.toFixed(2) + '%';
-            
-            // Trend analysis
-            const lastIdx = state.data.length - 1;
-            const ema20 = state.indicators.ema20[lastIdx];
-            const ema50 = state.indicators.ema50[lastIdx];
-            const ema200 = state.indicators.ema200[lastIdx];
-            
-            let trend = 'NEUTRE ⚪';
-            let trendStrength = 'Faible';
-            
-            if (lastPrice > ema20 && ema20 > ema50 && ema50 > ema200) {
-                trend = 'HAUSSIER 🟢';
-                trendStrength = 'Forte tendance haussière';
-            } else if (lastPrice < ema20 && ema20 < ema50 && ema50 < ema200) {
-                trend = 'BAISSIER 🔴';
-                trendStrength = 'Forte tendance baissière';
-            } else if (lastPrice > ema50) {
-                trend = 'HAUSSIER 🟢';
-                trendStrength = 'Tendance haussière modérée';
-            } else if (lastPrice < ema50) {
-                trend = 'BAISSIER 🔴';
-                trendStrength = 'Tendance baissière modérée';
-            }
-            
-            document.getElementById('trendDirection').textContent = trend;
-            document.getElementById('trendStrength').textContent = trendStrength;
-            
-            // Momentum
-            const macd = state.indicators.macd.macd[lastIdx];
-            const macdSignal = state.indicators.macd.signal[lastIdx];
-            const macdHist = state.indicators.macd.histogram[lastIdx];
-            
-            let momentumScore = 'NEUTRE ⚪';
-            let momentumStatus = 'Momentum équilibré';
-            
-            if (macdHist > 0 && macd > macdSignal) {
-                momentumScore = 'FORT 🟢';
-                momentumStatus = 'Momentum haussier confirmé';
-            } else if (macdHist < 0 && macd < macdSignal) {
-                momentumScore = 'FAIBLE 🔴';
-                momentumStatus = 'Momentum baissier';
-            }
-            
-            document.getElementById('momentumScore').textContent = momentumScore;
-            document.getElementById('momentumStatus').textContent = momentumStatus;
-            
-            // RSI Sentiment
-            const rsi = state.indicators.rsi[lastIdx];
-            let rsiSentiment = 'NEUTRE ⚪';
-            
-            if (rsi < 30) rsiSentiment = 'SURVENTE 🟢';
-            else if (rsi > 70) rsiSentiment = 'SURACHAT 🔴';
-            
-            document.getElementById('rsiSentiment').textContent = rsiSentiment;
-            document.getElementById('rsiValue').textContent = `RSI: ${rsi.toFixed(1)}`;
         }
 
         // BACKTEST
         async function runBacktest() {
             state.trades = [];
             state.equity = [];
-            state.position = null;
+            state.buySignals = [];
+            state.sellSignals = [];
             let capital = state.capital;
+            let position = null;
             let peakCapital = capital;
             let maxDrawdown = 0;
             
             document.getElementById('progressSection').style.display = 'block';
             document.getElementById('backtestBtn').disabled = true;
             
-            addLog('system', '🚀 BACKTEST', 'Début du backtest sur 1 an');
+            addLog('system', '🚀 START', `Backtest avec ${state.selectedBuyIndicators.length} BUY et ${state.selectedSellIndicators.length} SELL indicators`);
             
-            const minPeriod = 200; // Need enough data for EMA 200
+            const minPeriod = 200;
             
             for (let i = minPeriod; i < state.data.length; i++) {
                 const current = state.data[i];
-                const idx = i;
                 
                 // Update progress
                 const progress = ((i - minPeriod) / (state.data.length - minPeriod)) * 100;
@@ -1105,149 +839,189 @@
                 document.getElementById('currentPrice').textContent = '$' + current.close.toFixed(2);
                 document.getElementById('totalTrades').textContent = state.trades.length;
                 
-                // Check for buy signal
-                if (!state.position && shouldBuy(idx)) {
+                // Check BUY signal
+                if (!position && checkBuySignal(i)) {
                     const tradeAmount = capital * 0.3;
                     const fees = tradeAmount * 0.001;
-                    const slippage = tradeAmount * 0.0005;
-                    const totalCost = tradeAmount + fees + slippage;
+                    const totalCost = tradeAmount + fees;
                     
                     if (totalCost <= capital) {
                         const tokensAmount = tradeAmount / current.close;
-                        
-                        state.position = {
+                        position = {
                             entryPrice: current.close,
                             entryTime: current.timestamp,
+                            entryIndex: i,
                             amount: tradeAmount,
                             tokensAmount: tokensAmount,
                             peak: current.close
                         };
-                        
                         capital -= totalCost;
-                        
-                        addLog('BUY', '🟢 ACHAT', `${tokensAmount.toFixed(6)} @ $${current.close.toFixed(2)} • Capital: $${capital.toFixed(2)}`);
+                        state.buySignals.push({ index: i, price: current.close });
+                        addLog('BUY', '🟢 ACHAT', `${tokensAmount.toFixed(6)} @ $${current.close.toFixed(2)}`);
                     }
                 }
                 
-                // Check for sell signal
-                if (state.position && shouldSell(idx, state.position, current)) {
-                    const sellValue = state.position.tokensAmount * current.close;
+                // Check SELL signal
+                if (position && checkSellSignal(i, position, current)) {
+                    const sellValue = position.tokensAmount * current.close;
                     const fees = sellValue * 0.001;
-                    const slippage = sellValue * 0.0005;
-                    const netValue = sellValue - fees - slippage;
-                    
-                    const profit = netValue - state.position.amount;
-                    const profitPercent = (profit / state.position.amount) * 100;
+                    const netValue = sellValue - fees;
+                    const profit = netValue - position.amount;
+                    const profitPercent = (profit / position.amount) * 100;
                     
                     capital += netValue;
-                    
                     state.trades.push({
-                        entry: state.position.entryPrice,
+                        entry: position.entryPrice,
                         exit: current.close,
                         profit: profit,
                         profitPercent: profitPercent,
-                        duration: current.timestamp - state.position.entryTime
+                        entryIndex: position.entryIndex,
+                        exitIndex: i
                     });
                     
+                    state.sellSignals.push({ index: i, price: current.close });
                     addLog('SELL', profit >= 0 ? '🟢 VENTE' : '🔴 VENTE', 
-                        `$${netValue.toFixed(2)} • P/L: ${profit >= 0 ? '+' : ''}$${profit.toFixed(2)} (${profitPercent >= 0 ? '+' : ''}${profitPercent.toFixed(2)}%)`);
+                        `P/L: ${profit >= 0 ? '+' : ''}$${profit.toFixed(2)} (${profitPercent >= 0 ? '+' : ''}${profitPercent.toFixed(2)}%)`);
                     
-                    state.position = null;
+                    position = null;
                 }
                 
-                // Update peak for trailing stop
-                if (state.position && current.close > state.position.peak) {
-                    state.position.peak = current.close;
+                // Update peak
+                if (position && current.close > position.peak) {
+                    position.peak = current.close;
                 }
                 
                 // Track equity
                 let currentEquity = capital;
-                if (state.position) {
-                    currentEquity += state.position.tokensAmount * current.close;
+                if (position) {
+                    currentEquity += position.tokensAmount * current.close;
                 }
                 state.equity.push({ time: current.timestamp, value: currentEquity });
                 
                 // Track drawdown
-                if (currentEquity > peakCapital) {
-                    peakCapital = currentEquity;
-                }
+                if (currentEquity > peakCapital) peakCapital = currentEquity;
                 const drawdown = ((peakCapital - currentEquity) / peakCapital) * 100;
-                if (drawdown > maxDrawdown) {
-                    maxDrawdown = drawdown;
-                }
+                if (drawdown > maxDrawdown) maxDrawdown = drawdown;
                 
                 if (i % 10 === 0) await new Promise(r => setTimeout(r, 1));
             }
             
-            // Close final position if any
-            if (state.position) {
+            // Close final position
+            if (position) {
                 const lastData = state.data[state.data.length - 1];
-                const sellValue = state.position.tokensAmount * lastData.close;
+                const sellValue = position.tokensAmount * lastData.close;
                 const fees = sellValue * 0.001;
                 const netValue = sellValue - fees;
-                const profit = netValue - state.position.amount;
+                const profit = netValue - position.amount;
                 
                 capital += netValue;
                 state.trades.push({
-                    entry: state.position.entryPrice,
+                    entry: position.entryPrice,
                     exit: lastData.close,
                     profit: profit,
-                    profitPercent: (profit / state.position.amount) * 100
+                    profitPercent: (profit / position.amount) * 100,
+                    entryIndex: position.entryIndex,
+                    exitIndex: state.data.length - 1
                 });
                 
-                addLog('SELL', '⏹️ CLÔTURE', `Position finale vendue`);
+                addLog('SELL', '⏹️ FINAL', 'Position finale fermée');
             }
             
-            // Display results
             displayResults(capital, maxDrawdown);
+            updateCharts();
             
             document.getElementById('backtestBtn').disabled = false;
-            addLog('system', '✅ TERMINÉ', `Backtest complété • ${state.trades.length} trades`);
+            addLog('system', '✅ TERMINÉ', `${state.trades.length} trades • ROI: ${(((capital - state.capital) / state.capital) * 100).toFixed(2)}%`);
         }
 
-        function shouldBuy(idx) {
-            const rsi = state.indicators.rsi[idx];
-            const macd = state.indicators.macd.macd[idx];
-            const macdSignal = state.indicators.macd.signal[idx];
-            const price = state.data[idx].close;
-            const ema20 = state.indicators.ema20[idx];
-            const ema50 = state.indicators.ema50[idx];
-            const stochRSI = state.indicators.stochRSI[idx];
-            const bbLower = state.indicators.bb.lower[idx];
-            const adx = state.indicators.adx[idx];
-            const avgVolume = state.data.slice(Math.max(0, idx - 20), idx).reduce((sum, d) => sum + d.volume, 0) / 20;
-            const currentVolume = state.data[idx].volume;
-            
-            return (
-                rsi < 35 &&
-                macd > macdSignal &&
-                price > ema50 &&
-                ema20 > ema50 &&
-                stochRSI < 20 &&
-                price < bbLower * 1.02 &&
-                adx > 20 &&
-                currentVolume > avgVolume * 0.8
-            );
+        function checkBuySignal(idx) {
+            // ALL buy conditions must be true
+            return state.selectedBuyIndicators.every(id => {
+                const price = state.data[idx].close;
+                const rsi = state.indicators.rsi[idx];
+                const macd = state.indicators.macd.macd[idx];
+                const macdSignal = state.indicators.macd.signal[idx];
+                const macdPrev = state.indicators.macd.macd[idx - 1];
+                const macdSignalPrev = state.indicators.macd.signal[idx - 1];
+                const ema20 = state.indicators.ema20[idx];
+                const ema50 = state.indicators.ema50[idx];
+                const ema200 = state.indicators.ema200[idx];
+                const stochRSI = state.indicators.stochRSI[idx];
+                const bbLower = state.indicators.bb.lower[idx];
+                const adx = state.indicators.adx[idx];
+                const williamsR = state.indicators.williamsR[idx];
+                const cci = state.indicators.cci[idx];
+                const avgVolume = state.data.slice(Math.max(0, idx - 20), idx).reduce((sum, d) => sum + d.volume, 0) / 20;
+                const currentVolume = state.data[idx].volume;
+                const obv = state.indicators.obv[idx];
+                const obvPrev = state.indicators.obv[idx - 1];
+                
+                switch(id) {
+                    case 'rsi_oversold': return rsi < 30;
+                    case 'rsi_35': return rsi < 35;
+                    case 'rsi_40': return rsi < 40;
+                    case 'stoch_rsi_low': return stochRSI < 20;
+                    case 'macd_cross_up': return macd > macdSignal && macdPrev <= macdSignalPrev;
+                    case 'macd_positive': return macd > 0;
+                    case 'ema_20_50_cross': return ema20 > ema50;
+                    case 'price_above_ema50': return price > ema50;
+                    case 'price_above_ema200': return price > ema200;
+                    case 'bb_lower': return price < bbLower * 1.02;
+                    case 'bb_touch_lower': return price <= bbLower;
+                    case 'adx_strong': return adx > 25;
+                    case 'adx_moderate': return adx > 20;
+                    case 'williams_oversold': return williamsR < -80;
+                    case 'cci_oversold': return cci < -100;
+                    case 'volume_high': return currentVolume > avgVolume;
+                    case 'volume_surge': return currentVolume > avgVolume * 1.5;
+                    case 'obv_rising': return obv > obvPrev;
+                    default: return false;
+                }
+            });
         }
 
-        function shouldSell(idx, position, current) {
-            const profitPercent = ((current.close - position.entryPrice) / position.entryPrice) * 100;
-            const trailingStop = ((position.peak - current.close) / position.peak) * 100;
-            
-            const rsi = state.indicators.rsi[idx];
-            const macd = state.indicators.macd.macd[idx];
-            const macdSignal = state.indicators.macd.signal[idx];
-            const price = current.close;
-            const ema50 = state.indicators.ema50[idx];
-            
-            return (
-                profitPercent >= 3 ||
-                profitPercent <= -2 ||
-                trailingStop >= 1.5 ||
-                rsi > 70 ||
-                macd < macdSignal ||
-                price < ema50
-            );
+        function checkSellSignal(idx, position, current) {
+            // At least ONE sell condition must be true
+            return state.selectedSellIndicators.some(id => {
+                const price = current.close;
+                const profitPercent = ((price - position.entryPrice) / position.entryPrice) * 100;
+                const trailingStop = ((position.peak - price) / position.peak) * 100;
+                const rsi = state.indicators.rsi[idx];
+                const macd = state.indicators.macd.macd[idx];
+                const macdSignal = state.indicators.macd.signal[idx];
+                const macdPrev = state.indicators.macd.macd[idx - 1];
+                const macdSignalPrev = state.indicators.macd.signal[idx - 1];
+                const ema20 = state.indicators.ema20[idx];
+                const ema50 = state.indicators.ema50[idx];
+                const stochRSI = state.indicators.stochRSI[idx];
+                const bbUpper = state.indicators.bb.upper[idx];
+                const williamsR = state.indicators.williamsR[idx];
+                const cci = state.indicators.cci[idx];
+                const avgVolume = state.data.slice(Math.max(0, idx - 20), idx).reduce((sum, d) => sum + d.volume, 0) / 20;
+                const currentVolume = state.data[idx].volume;
+                
+                switch(id) {
+                    case 'take_profit_2': return profitPercent >= 2;
+                    case 'take_profit_3': return profitPercent >= 3;
+                    case 'take_profit_5': return profitPercent >= 5;
+                    case 'stop_loss_1': return profitPercent <= -1;
+                    case 'stop_loss_2': return profitPercent <= -2;
+                    case 'stop_loss_3': return profitPercent <= -3;
+                    case 'trailing_stop': return trailingStop >= 1.5;
+                    case 'rsi_overbought': return rsi > 70;
+                    case 'rsi_75': return rsi > 75;
+                    case 'stoch_rsi_high': return stochRSI > 80;
+                    case 'macd_cross_down': return macd < macdSignal && macdPrev >= macdSignalPrev;
+                    case 'macd_negative': return macd < 0;
+                    case 'price_below_ema50': return price < ema50;
+                    case 'price_below_ema20': return price < ema20;
+                    case 'bb_upper': return price >= bbUpper;
+                    case 'williams_overbought': return williamsR > -20;
+                    case 'cci_overbought': return cci > 100;
+                    case 'volume_low': return currentVolume < avgVolume * 0.5;
+                    default: return false;
+                }
+            });
         }
 
         function displayResults(finalCapital, maxDrawdown) {
@@ -1261,19 +1035,10 @@
             
             const avgWin = wins.length > 0 ? wins.reduce((sum, t) => sum + t.profit, 0) / wins.length : 0;
             const avgLoss = losses.length > 0 ? losses.reduce((sum, t) => sum + t.profit, 0) / losses.length : 0;
-            const maxWin = wins.length > 0 ? Math.max(...wins.map(t => t.profit)) : 0;
-            const maxLoss = losses.length > 0 ? Math.min(...losses.map(t => t.profit)) : 0;
             
             const totalWins = wins.reduce((sum, t) => sum + t.profit, 0);
             const totalLosses = Math.abs(losses.reduce((sum, t) => sum + t.profit, 0));
             const profitFactor = totalLosses > 0 ? totalWins / totalLosses : totalWins > 0 ? 999 : 0;
-            
-            // Sharpe Ratio (simplified)
-            const returns = state.trades.map(t => t.profitPercent);
-            const avgReturn = returns.reduce((a, b) => a + b, 0) / returns.length;
-            const variance = returns.reduce((a, b) => a + Math.pow(b - avgReturn, 2), 0) / returns.length;
-            const stdDev = Math.sqrt(variance);
-            const sharpeRatio = stdDev > 0 ? (avgReturn / stdDev) : 0;
             
             // Update UI
             const roiEl = document.getElementById('finalROI');
@@ -1293,369 +1058,94 @@
             document.getElementById('loseTrades').textContent = losses.length;
             document.getElementById('avgWin').textContent = '+$' + avgWin.toFixed(2);
             document.getElementById('avgLoss').textContent = '$' + avgLoss.toFixed(2);
-            document.getElementById('maxWin').textContent = '+$' + maxWin.toFixed(2);
-            document.getElementById('maxLoss').textContent = '$' + maxLoss.toFixed(2);
-            document.getElementById('profitFactor').textContent = profitFactor.toFixed(2);
             document.getElementById('maxDrawdown').textContent = maxDrawdown.toFixed(2) + '%';
-            document.getElementById('sharpeRatio').textContent = sharpeRatio.toFixed(2);
+            document.getElementById('profitFactor').textContent = profitFactor.toFixed(2);
             
-            // Show results
             document.getElementById('resultsSection').style.display = 'grid';
-            document.getElementById('chartSection').style.display = 'block';
-            
-            // Update equity chart
-            const step = Math.max(1, Math.floor(state.equity.length / 200));
-            const filtered = state.equity.filter((_, i) => i % step === 0);
-            
-            equityChart.data.labels = filtered.map(e => new Date(e.time).toLocaleDateString('fr-FR'));
-            equityChart.data.datasets[0].data = filtered.map(e => e.value);
-            equityChart.update();
-            
-            // Analyze indicator performance
-            analyzeIndicatorPerformance();
-            
-            // Update price charts
-            updatePriceCharts();
         }
 
-        function analyzeIndicatorPerformance() {
-            // Track which indicators were most accurate for buy signals
-            let indicatorScores = {
-                rsi: { correct: 0, total: 0, name: 'RSI < 35' },
-                macd: { correct: 0, total: 0, name: 'MACD Bullish Cross' },
-                ema_cross: { correct: 0, total: 0, name: 'EMA 20 > EMA 50' },
-                price_ema: { correct: 0, total: 0, name: 'Prix > EMA 50' },
-                stochRSI: { correct: 0, total: 0, name: 'Stoch RSI < 20' },
-                bb_lower: { correct: 0, total: 0, name: 'BB Lower Band' },
-                adx: { correct: 0, total: 0, name: 'ADX > 20' },
-                volume: { correct: 0, total: 0, name: 'Volume élevé' }
-            };
-            
-            // Analyze each trade
-            state.trades.forEach(trade => {
-                const profitable = trade.profit > 0;
-                
-                // Check each indicator at entry
-                const entryIdx = state.data.findIndex(d => d.close === trade.entry);
-                if (entryIdx > 0) {
-                    // RSI
-                    if (state.indicators.rsi[entryIdx] < 35) {
-                        indicatorScores.rsi.total++;
-                        if (profitable) indicatorScores.rsi.correct++;
-                    }
-                    
-                    // MACD
-                    if (state.indicators.macd.macd[entryIdx] > state.indicators.macd.signal[entryIdx]) {
-                        indicatorScores.macd.total++;
-                        if (profitable) indicatorScores.macd.correct++;
-                    }
-                    
-                    // EMA Cross
-                    if (state.indicators.ema20[entryIdx] > state.indicators.ema50[entryIdx]) {
-                        indicatorScores.ema_cross.total++;
-                        if (profitable) indicatorScores.ema_cross.correct++;
-                    }
-                    
-                    // Prix > EMA 50
-                    if (trade.entry > state.indicators.ema50[entryIdx]) {
-                        indicatorScores.price_ema.total++;
-                        if (profitable) indicatorScores.price_ema.correct++;
-                    }
-                    
-                    // Stoch RSI
-                    if (state.indicators.stochRSI[entryIdx] < 20) {
-                        indicatorScores.stochRSI.total++;
-                        if (profitable) indicatorScores.stochRSI.correct++;
-                    }
-                    
-                    // BB Lower
-                    if (trade.entry < state.indicators.bb.lower[entryIdx] * 1.02) {
-                        indicatorScores.bb_lower.total++;
-                        if (profitable) indicatorScores.bb_lower.correct++;
-                    }
-                    
-                    // ADX
-                    if (state.indicators.adx[entryIdx] > 20) {
-                        indicatorScores.adx.total++;
-                        if (profitable) indicatorScores.adx.correct++;
-                    }
-                }
-            });
-            
-            // Calculate accuracy for each indicator
-            const performance = Object.entries(indicatorScores)
-                .map(([key, score]) => ({
-                    key,
-                    name: score.name,
-                    accuracy: score.total > 0 ? (score.correct / score.total) * 100 : 0,
-                    total: score.total,
-                    correct: score.correct
-                }))
-                .sort((a, b) => b.accuracy - a.accuracy);
-            
-            state.indicatorPerformance = performance;
-            
-            // Display results
-            displayIndicatorAnalysis(performance);
-        }
-
-        function displayIndicatorAnalysis(performance) {
-            // Best indicators
-            const best = performance.slice(0, 3);
-            const bestHTML = best.map((ind, i) => {
-                const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉';
-                return `
-                    <div class="flex items-center justify-between bg-yellow-800 bg-opacity-30 rounded-lg p-3">
-                        <div class="flex items-center gap-3">
-                            <span class="text-2xl">${medal}</span>
-                            <div>
-                                <p class="font-bold text-yellow-100">${ind.name}</p>
-                                <p class="text-xs text-yellow-300">${ind.correct}/${ind.total} trades réussis</p>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-2xl font-bold text-yellow-400">${ind.accuracy.toFixed(1)}%</p>
-                            <p class="text-xs text-yellow-300">précision</p>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-            
-            document.getElementById('bestIndicators').innerHTML = bestHTML;
-            
-            // Predictive indicators
-            const predictive = performance.filter(p => p.accuracy >= 50 && p.total >= 3);
-            const predictiveHTML = predictive.map(ind => `
-                <div class="bg-blue-800 bg-opacity-30 rounded-lg p-3">
-                    <div class="flex justify-between items-center">
-                        <span class="text-sm font-semibold text-blue-200">${ind.name}</span>
-                        <span class="text-sm font-bold text-blue-400">${ind.accuracy.toFixed(1)}%</span>
-                    </div>
-                    <div class="w-full bg-gray-700 rounded-full h-2 mt-2">
-                        <div class="bg-blue-500 h-2 rounded-full" style="width: ${ind.accuracy}%"></div>
-                    </div>
-                </div>
-            `).join('');
-            
-            document.getElementById('predictiveIndicators').innerHTML = predictiveHTML || 
-                '<p class="text-sm text-gray-400">Pas assez de données</p>';
-            
-            // Weak indicators
-            const weak = performance.filter(p => p.accuracy < 50 && p.total >= 3);
-            const weakHTML = weak.map(ind => `
-                <div class="bg-purple-800 bg-opacity-30 rounded-lg p-3">
-                    <div class="flex justify-between items-center">
-                        <span class="text-sm font-semibold text-purple-200">${ind.name}</span>
-                        <span class="text-sm font-bold text-purple-400">${ind.accuracy.toFixed(1)}%</span>
-                    </div>
-                    <div class="w-full bg-gray-700 rounded-full h-2 mt-2">
-                        <div class="bg-purple-500 h-2 rounded-full" style="width: ${ind.accuracy}%"></div>
-                    </div>
-                </div>
-            `).join('');
-            
-            document.getElementById('weakIndicators').innerHTML = weakHTML || 
-                '<p class="text-sm text-gray-400">Tous les indicateurs sont performants ✅</p>';
-            
-            // Recommendations
-            const recommendations = [];
-            
-            if (best.length > 0 && best[0].accuracy > 70) {
-                recommendations.push(`✅ Excellent: "${best[0].name}" est très fiable (${best[0].accuracy.toFixed(1)}%)`);
-            }
-            
-            if (weak.length > 0) {
-                recommendations.push(`⚠️ Attention: "${weak[0].name}" montre une faible précision (${weak[0].accuracy.toFixed(1)}%)`);
-                recommendations.push(`💡 Suggestion: Réduire le poids de "${weak[0].name}" dans la stratégie`);
-            }
-            
-            const avgAccuracy = performance.reduce((sum, p) => sum + p.accuracy, 0) / performance.length;
-            if (avgAccuracy < 50) {
-                recommendations.push('📉 Performance globale faible - envisager d\'ajuster les seuils');
-            } else if (avgAccuracy > 60) {
-                recommendations.push('📈 Bonne performance globale des indicateurs');
-            }
-            
-            if (state.trades.length < 10) {
-                recommendations.push('⚠️ Peu de trades - augmenter la période ou ajuster les critères d\'entrée');
-            }
-            
-            const recHTML = recommendations.map(rec => `<li>• ${rec}</li>`).join('');
-            document.getElementById('recommendations').innerHTML = `<ul class="space-y-1">${recHTML}</ul>`;
-            
-            // Show section
-            document.getElementById('indicatorsAnalysis').style.display = 'block';
-        }
-
-        function updatePriceCharts() {
-            // Update price chart
+        function updateCharts() {
             const step = Math.max(1, Math.floor(state.data.length / 200));
             const filtered = state.data.filter((_, i) => i % step === 0);
             
-            priceChart.data.labels = filtered.map(d => new Date(d.timestamp).toLocaleDateString('fr-FR'));
-            priceChart.data.datasets[0].data = filtered.map(d => d.close);
-            priceChart.update();
+            // Price chart with buy/sell signals
+            charts.price.data.labels = filtered.map(d => new Date(d.timestamp).toLocaleDateString('fr-FR'));
+            charts.price.data.datasets[0].data = filtered.map(d => d.close);
             
-            // Update RSI chart
-            rsiChart.data.labels = filtered.map(d => new Date(d.timestamp).toLocaleDateString('fr-FR'));
-            rsiChart.data.datasets[0].data = filtered.map((d, i) => state.indicators.rsi[i * step]);
-            rsiChart.update();
+            // Add buy signals
+            const buyPoints = state.buySignals.map(s => ({
+                x: Math.floor(s.index / step),
+                y: s.price
+            }));
             
-            // Update MACD chart
-            macdChart.data.labels = filtered.map(d => new Date(d.timestamp).toLocaleDateString('fr-FR'));
-            macdChart.data.datasets[0].data = filtered.map((d, i) => state.indicators.macd.histogram[i * step]);
-            macdChart.data.datasets[1].data = filtered.map((d, i) => state.indicators.macd.macd[i * step]);
-            macdChart.data.datasets[2].data = filtered.map((d, i) => state.indicators.macd.signal[i * step]);
-            macdChart.update();
+            const sellPoints = state.sellSignals.map(s => ({
+                x: Math.floor(s.index / step),
+                y: s.price
+            }));
             
-            // Show sections
-            document.getElementById('priceChartSection').style.display = 'block';
-            document.getElementById('rsiChartSection').style.display = 'block';
-        }
-
-        function toggleIndicator(type) {
-            chartVisibility[type] = !chartVisibility[type];
-            
-            if (type === 'ema') {
-                if (chartVisibility.ema) {
-                    // Add EMA 20 and 50
-                    const step = Math.max(1, Math.floor(state.data.length / 200));
-                    const filtered = state.data.filter((_, i) => i % step === 0);
-                    
-                    priceChart.data.datasets.push({
-                        label: 'EMA 20',
-                        data: filtered.map((d, i) => state.indicators.ema20[i * step]),
-                        borderColor: '#f59e0b',
-                        borderWidth: 2,
-                        tension: 0.4,
-                        fill: false,
-                        pointRadius: 0
-                    });
-                    
-                    priceChart.data.datasets.push({
-                        label: 'EMA 50',
-                        data: filtered.map((d, i) => state.indicators.ema50[i * step]),
-                        borderColor: '#ef4444',
-                        borderWidth: 2,
-                        tension: 0.4,
-                        fill: false,
-                        pointRadius: 0
-                    });
-                } else {
-                    // Remove EMA datasets
-                    priceChart.data.datasets = priceChart.data.datasets.filter(d => !d.label.includes('EMA'));
+            charts.price.data.datasets = [
+                charts.price.data.datasets[0],
+                {
+                    label: 'Signaux ACHAT',
+                    data: buyPoints,
+                    borderColor: '#10b981',
+                    backgroundColor: '#10b981',
+                    pointRadius: 8,
+                    pointStyle: 'triangle',
+                    showLine: false,
+                    pointRotation: 0
+                },
+                {
+                    label: 'Signaux VENTE',
+                    data: sellPoints,
+                    borderColor: '#ef4444',
+                    backgroundColor: '#ef4444',
+                    pointRadius: 8,
+                    pointStyle: 'triangle',
+                    showLine: false,
+                    pointRotation: 180
                 }
-            } else if (type === 'bb') {
-                if (chartVisibility.bb) {
-                    // Add Bollinger Bands
-                    const step = Math.max(1, Math.floor(state.data.length / 200));
-                    const filtered = state.data.filter((_, i) => i % step === 0);
-                    
-                    priceChart.data.datasets.push({
-                        label: 'BB Upper',
-                        data: filtered.map((d, i) => state.indicators.bb.upper[i * step]),
-                        borderColor: '#a855f7',
-                        borderWidth: 1,
-                        borderDash: [5, 5],
-                        tension: 0.4,
-                        fill: false,
-                        pointRadius: 0
-                    });
-                    
-                    priceChart.data.datasets.push({
-                        label: 'BB Lower',
-                        data: filtered.map((d, i) => state.indicators.bb.lower[i * step]),
-                        borderColor: '#a855f7',
-                        borderWidth: 1,
-                        borderDash: [5, 5],
-                        tension: 0.4,
-                        fill: false,
-                        pointRadius: 0
-                    });
-                } else {
-                    priceChart.data.datasets = priceChart.data.datasets.filter(d => !d.label.includes('BB'));
-                }
-            } else if (type === 'trades') {
-                if (chartVisibility.trades) {
-                    // Add buy/sell markers
-                    const step = Math.max(1, Math.floor(state.data.length / 200));
-                    const buyPoints = state.trades.map(t => {
-                        const idx = state.data.findIndex(d => d.close === t.entry);
-                        return { x: Math.floor(idx / step), y: t.entry };
-                    }).filter(p => p.x >= 0);
-                    
-                    const sellPoints = state.trades.map(t => {
-                        const idx = state.data.findIndex(d => d.close === t.exit);
-                        return { x: Math.floor(idx / step), y: t.exit };
-                    }).filter(p => p.x >= 0);
-                    
-                    priceChart.data.datasets.push({
-                        label: 'Achats',
-                        data: buyPoints,
-                        borderColor: '#10b981',
-                        backgroundColor: '#10b981',
-                        pointRadius: 6,
-                        pointStyle: 'triangle',
-                        showLine: false
-                    });
-                    
-                    priceChart.data.datasets.push({
-                        label: 'Ventes',
-                        data: sellPoints,
-                        borderColor: '#ef4444',
-                        backgroundColor: '#ef4444',
-                        pointRadius: 6,
-                        pointStyle: 'triangle',
-                        rotation: 180,
-                        showLine: false
-                    });
-                } else {
-                    priceChart.data.datasets = priceChart.data.datasets.filter(d => 
-                        d.label !== 'Achats' && d.label !== 'Ventes'
-                    );
-                }
-            }
+            ];
+            charts.price.update();
             
-            priceChart.update();
-        }
-
-        function resetChart() {
-            chartVisibility = { ema: false, bb: false, trades: false };
+            // Update counts
+            document.getElementById('buyPointsCount').textContent = state.buySignals.length;
+            document.getElementById('sellPointsCount').textContent = state.sellSignals.length;
+            document.getElementById('completedTrades').textContent = state.trades.length;
             
-            const step = Math.max(1, Math.floor(state.data.length / 200));
-            const filtered = state.data.filter((_, i) => i % step === 0);
+            // Equity chart
+            const equityStep = Math.max(1, Math.floor(state.equity.length / 200));
+            const equityFiltered = state.equity.filter((_, i) => i % equityStep === 0);
+            charts.equity.data.labels = equityFiltered.map(e => new Date(e.time).toLocaleDateString('fr-FR'));
+            charts.equity.data.datasets[0].data = equityFiltered.map(e => e.value);
+            charts.equity.update();
             
-            priceChart.data.datasets = [{
-                label: 'Prix',
-                data: filtered.map(d => d.close),
-                borderColor: '#3b82f6',
-                backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                borderWidth: 2,
-                tension: 0.1,
-                fill: false,
-                pointRadius: 0
-            }];
+            // RSI chart
+            charts.rsi.data.labels = filtered.map(d => new Date(d.timestamp).toLocaleDateString('fr-FR'));
+            charts.rsi.data.datasets[0].data = filtered.map((d, i) => state.indicators.rsi[i * step]);
+            charts.rsi.update();
             
-            priceChart.update();
+            // MACD chart
+            charts.macd.data.labels = filtered.map(d => new Date(d.timestamp).toLocaleDateString('fr-FR'));
+            charts.macd.data.datasets[0].data = filtered.map((d, i) => state.indicators.macd.histogram[i * step]);
+            charts.macd.data.datasets[1].data = filtered.map((d, i) => state.indicators.macd.macd[i * step]);
+            charts.macd.data.datasets[2].data = filtered.map((d, i) => state.indicators.macd.signal[i * step]);
+            charts.macd.update();
+            
+            document.getElementById('chartsSection').style.display = 'block';
         }
 
         function addLog(source, action, details) {
             const timestamp = new Date().toLocaleTimeString();
             state.logs.unshift({ timestamp, source, action, details });
             if (state.logs.length > 100) state.logs.pop();
-            
             if (state.logs.length % 5 === 0 || action.includes('✅') || action.includes('❌')) {
                 renderLogs();
             }
         }
 
         function renderLogs() {
-            const icons = { 
-                BUY: '🟢',
-                SELL: '🔴',
-                system: '⚙️'
-            };
-            
+            const icons = { BUY: '🟢', SELL: '🔴', system: '⚙️' };
             const display = state.logs.slice(0, 50);
             
             const html = display.map(log => `
@@ -1685,7 +1175,7 @@
             }
         }
 
-        console.log('🤖 Trading Bot PRO - Initialized');
+        console.log('🤖 Custom Trading Bot Ready');
     </script>
 </body>
 </html>
